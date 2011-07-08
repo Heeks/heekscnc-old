@@ -1,0 +1,12 @@
+[submodule "libarea"]
+	path = libarea
+	url =  git://github.com/Heeks/libarea.git
+#	pushurl = git@github.com:Heeks/libarea.git
+
+[submodule "libactp"]
+	path = libactp
+	url =  git://github.com/Heeks/libactp.git
+#	pushurl = git@github.com:Heeks/libactp.git
+
+
+
