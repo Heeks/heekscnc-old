@@ -8,7 +8,10 @@
 [submodule "oce"]
 	path = oce
 	url = https://github.com/tpaviot/oce
+#[submodule "libarea"]
+#	path = libarea
+#	url = git://github.com/Heeks/libarea.git
+#	pushurl = git@github.com:Heeks/libarea.git
 [submodule "libarea"]
 	path = libarea
 	url = git://github.com/Heeks/libarea.git
-#	pushurl = git@github.com:Heeks/libarea.git
