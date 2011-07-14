@@ -15,3 +15,6 @@
 [submodule "libarea"]
 	path = libarea
 	url = git://github.com/Heeks/libarea.git
+[submodule "opencamlib"]
+	path = opencamlib
+	url = git://github.com/aewallin/opencamlib.git
