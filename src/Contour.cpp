@@ -1017,6 +1017,11 @@ Python CContour::AppendTextToProgram( CMachineState *pMachineState )
 
     for (HeeksObj *object = GetFirstChild(); object != NULL; object = GetNextChild())
     {
+		if (object->GetType() != SketchType)
+		{
+			continue;
+		}
+
         std::list<TopoDS_Shape> wires;
         if (! heeksCAD->ConvertSketchToFaceOrWire( object, wires, false))
         {

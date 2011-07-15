@@ -1076,7 +1076,7 @@ void CProfile::CopyFrom(const HeeksObj* object)
 
 bool CProfile::CanAdd(HeeksObj* object)
 {
-	return ((object != NULL) && (object->GetType() == TagsType || object->GetType() == SketchType));
+	return ((object != NULL) && (object->GetType() == TagsType || object->GetType() == SketchType || object->GetType() == FixtureType));
 }
 
 bool CProfile::CanAddTo(HeeksObj* owner)
