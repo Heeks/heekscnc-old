@@ -480,7 +480,7 @@ def matrix(a1=None,b1=None,c1=None,a2=None,b2=None,c2=None,a3=None,b3=None,c3=No
     creator.matrix(a1,b1,c1,a2,b2,c2,a3,b3,c3)
     
 def translate(x=None,y=None,z=None):
-    creator.transl(x,y,z)
+    creator.translate(x,y,z)
     
 def rotate(xyrot=None,yzrot=None,zxrot=None,angle=None):
     creator.rotate(xyrot,yzrot,zxrot,angle)
