@@ -56,7 +56,9 @@ class Creator(nc.Creator):
         self.machine_coordinates = False
         self.drillExpanded = False
         self.can_do_helical_arcs = True
-        
+        self.shift_x = 0.0
+        self.shift_y = 0.0
+        self.shift_z = 0.0        
     ############################################################################
     ##  Codes
 
@@ -239,9 +241,9 @@ class Creator(nc.Creator):
     def set_temporary_origin(self, x=None, y=None, z=None, a=None, b=None, c=None):
         self.write_blocknum()
         self.write(self.SPACE() + (self.SET_TEMPORARY_COORDINATE_SYSTEM()))
-        if (x != None): self.write( self.SPACE() + 'X ' + (self.fmt.string(x)) )
-        if (y != None): self.write( self.SPACE() + 'Y ' + (self.fmt.string(y)) )
-        if (z != None): self.write( self.SPACE() + 'Z ' + (self.fmt.string(z)) )
+        if (x != None): self.write( self.SPACE() + 'X ' + (self.fmt.string(x + self.shift_x)) )
+        if (y != None): self.write( self.SPACE() + 'Y ' + (self.fmt.string(y + self.shift_y)) )
+        if (z != None): self.write( self.SPACE() + 'Z ' + (self.fmt.string(z + self.shift_z)) )
         if (a != None): self.write( self.SPACE() + 'A ' + (self.fmt.string(a)) )
         if (b != None): self.write( self.SPACE() + 'B ' + (self.fmt.string(b)) )
         if (c != None): self.write( self.SPACE() + 'C ' + (self.fmt.string(c)) )
@@ -251,6 +253,13 @@ class Creator(nc.Creator):
         self.write_blocknum()
         self.write(self.SPACE() + (self.REMOVE_TEMPORARY_COORDINATE_SYSTEM()))
         self.write('\n')
+    ############################################################################
+    ##  new graphics origin- make a new coordinate system and snap it onto the geometry
+    ##  the toolpath generated should be translated 
+    def translate(self,x=None, y=None, z=None):
+        self.shift_x = -x
+        self.shift_y = -y
+        self.shift_z = -z
 
     ############################################################################
     ##  Tools
@@ -351,14 +360,14 @@ class Creator(nc.Creator):
         if (x != None):
             dx = x - self.x
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.X() + (self.fmt.string(x)))
+                self.write(self.SPACE() + self.X() + (self.fmt.string(x + self.shift_x)))
             else:
                 self.write(self.SPACE() + self.X() + (self.fmt.string(dx)))
             self.x = x
         if (y != None):
             dy = y - self.y
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.Y() + (self.fmt.string(y)))
+                self.write(self.SPACE() + self.Y() + (self.fmt.string(y + self.shift_y)))
             else:
                 self.write(self.SPACE() + self.Y() + (self.fmt.string(dy)))
 
@@ -366,7 +375,7 @@ class Creator(nc.Creator):
         if (z != None):
             dz = z - self.z
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.Z() + (self.fmt.string(z)))
+                self.write(self.SPACE() + self.Z() + (self.fmt.string(z + self.shift_z)))
             else:
                 self.write(self.SPACE() + self.Z() + (self.fmt.string(dz)))
 
@@ -413,14 +422,14 @@ class Creator(nc.Creator):
         if (x != None):
             dx = x - self.x
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.X() + (self.fmt.string(x)))
+                self.write(self.SPACE() + self.X() + (self.fmt.string(x + self.shift_x)))
             else:
                 self.write(self.SPACE() + self.X() + (self.fmt.string(dx)))
             self.x = x
         if (y != None):
             dy = y - self.y
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.Y() + (self.fmt.string(y)))
+                self.write(self.SPACE() + self.Y() + (self.fmt.string(y + self.shift_y)))
             else:
                 self.write(self.SPACE() + self.Y() + (self.fmt.string(dy)))
 
@@ -428,7 +437,7 @@ class Creator(nc.Creator):
         if (z != None):
             dz = z - self.z
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.Z() + (self.fmt.string(z)))
+                self.write(self.SPACE() + self.Z() + (self.fmt.string(z + self.shift_z)))
             else:
                 self.write(self.SPACE() + self.Z() + (self.fmt.string(dz)))
 
@@ -441,16 +450,17 @@ class Creator(nc.Creator):
 
     def same_xyz(self, x=None, y=None, z=None):
         if (x != None):
-            if (self.fmt.string(x)) != (self.fmt.string(self.x)):
+            if (self.fmt.string(x + self.shift_x)) != (self.fmt.string(self.x)):
                 return False
         if (y != None):
-            if (self.fmt.string(y)) != (self.fmt.string(self.y)):
+            if (self.fmt.string(y + self.shift_y)) != (self.fmt.string(self.y)):
                 return False
         if (z != None):
-            if (self.fmt.string(z)) != (self.fmt.string(self.z)):
+            if (self.fmt.string(z + self.shift_z)) != (self.fmt.string(self.z)):
                 return False
             
         return True
+
     
     def get_quadrant(self, dx, dy):
         if dx < 0:
@@ -458,6 +468,7 @@ class Creator(nc.Creator):
                 return 2
             else:
                 return 1
+
         else:
             if dy < 0:
                 return 3
@@ -562,7 +573,7 @@ class Creator(nc.Creator):
                     if cw:
                         q = q - 1
                     else:
-                        q = q + 1                        
+                        q = q + 1
                     
             self.in_quadrant_splitting = False
             return
@@ -582,19 +593,19 @@ class Creator(nc.Creator):
         if (x != None):
             dx = x - self.x
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.X() + (self.fmt.string(x)))
+                self.write(self.SPACE() + self.X() + (self.fmt.string(x + self.shift_x)))
             else:
                 self.write(self.SPACE() + self.X() + (self.fmt.string(dx)))
         if (y != None):
             dy = y - self.y
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.Y() + (self.fmt.string(y)))
+                self.write(self.SPACE() + self.Y() + (self.fmt.string(y + self.shift_y)))
             else:
                 self.write(self.SPACE() + self.Y() + (self.fmt.string(dy)))
         if (z != None):
             dz = z - self.z
             if (self.absolute_flag ):
-                self.write(self.SPACE() + self.Z() + (self.fmt.string(z)))
+                self.write(self.SPACE() + self.Z() + (self.fmt.string(z + self.shift_z)))
             else:
                 self.write(self.SPACE() + self.Z() + (self.fmt.string(dz)))
         if (i != None):
@@ -795,12 +806,12 @@ class Creator(nc.Creator):
         retract_height = z + standoff        
         if (x != None):        
             dx = x - self.x        
-            self.write(self.SPACE() + self.X() + (self.fmt.string(x)))        
+            self.write(self.SPACE() + self.X() + (self.fmt.string(x + self.shift_x)))        
             self.x = x 
        
         if (y != None):        
             dy = y - self.y        
-            self.write(self.SPACE() + self.Y() + (self.fmt.string(y)))        
+            self.write(self.SPACE() + self.Y() + (self.fmt.string(y + self.shift_y)))        
             self.y = y
                       
         dz = (z + standoff) - self.z # In the end, we will be standoff distance above the z value passed in.
@@ -850,14 +861,14 @@ class Creator(nc.Creator):
                 raise "only rigid tapping currently supported"
 
         self.write_preps()
-        self.write_blocknum()				
+        self.write_blocknum()
         self.write_spindle()
         self.write('\n')
 
         # rapid to starting point; z first, then x,y iff given
 
-        # Set the retraction point to the 'standoff' distance above the starting z height.		
-        retract_height = z + standoff		
+        # Set the retraction point to the 'standoff' distance above the starting z height.
+        retract_height = z + standoff
 
         # unsure if this is needed:
         if self.z != retract_height:
@@ -865,23 +876,23 @@ class Creator(nc.Creator):
 
         # then continue to x,y if given
         if (x != None) or (y != None):
-                        self.write_blocknum()				
-                        self.write(self.RAPID() )		   
+                        self.write_blocknum()
+                        self.write(self.RAPID() )
 
-                        if (x != None):		
-                                        self.write(self.X() + self.fmt.string(x))		
+                        if (x != None):
+                                        self.write(self.X() + self.fmt.string(x + self.shift_x))
                                         self.x = x 
 
-                        if (y != None):		
-                                        self.write(self.Y() + self.fmt.string(y))		
+                        if (y != None):
+                                        self.write(self.Y() + self.fmt.string(y + self.shift_y))
                                         self.y = y
                         self.write('\n')
 
-        self.write_blocknum()				
+        self.write_blocknum()
         self.write( self.TAP() )
-        self.write( self.TAP_DEPTH(self.ffmt,pitch) + self.SPACE() )			
-        self.write(self.Z() + self.fmt.string(z - depth))	# This is the 'z' value for the bottom of the tap.
-        self.write_misc()	
+        self.write( self.TAP_DEPTH(self.ffmt,pitch) + self.SPACE() )
+        self.write(self.Z() + self.fmt.string(z - depth))# This is the 'z' value for the bottom of the tap.
+        self.write_misc()
         self.write('\n')
 
         self.z = retract_height	# this cycle returns to the start position, so remember that as z value
@@ -1108,15 +1119,15 @@ class Creator(nc.Creator):
         self.write( self.RAPID() + ' X [ #4 + #6 ] Y [ #5 + #7 ]\n' )
 
     def BEST_POSSIBLE_SPEED(self, motion_blending_tolerance, naive_cam_tolerance): 
-	    statement = 'G64'
+        statement = 'G64'
 
-	    if (motion_blending_tolerance > 0):
-		    statement += ' P ' + str(motion_blending_tolerance)
+        if (motion_blending_tolerance > 0):
+            statement += ' P ' + str(motion_blending_tolerance)
 
-	    if (naive_cam_tolerance > 0):
-		    statement += ' Q ' + str(naive_cam_tolerance)
+        if (naive_cam_tolerance > 0):
+            statement += ' Q ' + str(naive_cam_tolerance)
 
-	    return(statement)
+        return(statement)
             
     def set_path_control_mode(self, mode, motion_blending_tolerance, naive_cam_tolerance ):
         self.write_blocknum()
