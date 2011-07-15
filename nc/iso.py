@@ -335,11 +335,11 @@ class Creator(nc.Creator):
     ############################################################################
     ##  Moves
 
-    def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None ):
+    def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None, machine_coordinates=None ):
         self.write_blocknum()
 
-        if self.machine_coordinates != False:
-            self.write( self.SPACE() + self.MACHINE_COORDINATES() )
+        if self.machine_coordinates != False or (machine_coordinates != None and machine_coordinates == True):
+            self.write( self.MACHINE_COORDINATES() + self.SPACE() )
 
         if self.g0123_modal:
             if self.prev_g0123 != self.RAPID():
