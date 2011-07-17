@@ -186,7 +186,7 @@ class Creator(nc.Creator):
     ############################################################################
     ##  Moves
 
-    def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None):
+    def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None, machine_coordinates=None):
         self.cut_path()
         self.original.rapid(x, y, z, a, b, c)
         if x != None: self.x = x * units
