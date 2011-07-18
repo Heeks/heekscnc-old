@@ -1,9 +1,3 @@
-[submodule "libactp"]
-	path = libactp
-	url =  git://github.com/Heeks/libactp.git
-#	pushurl = git@github.com:Heeks/libactp.git
-
-
 
 [submodule "oce"]
 	path = oce

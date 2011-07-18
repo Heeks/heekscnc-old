@@ -39,9 +39,9 @@ else( UNIX )
 endif( UNIX )
 
 set( heekscnc_HDRS
-    Adaptive.h     CTool.h        GTri.h               Op.h             PythonString.h     stdafx.h
+    CTool.h        GTri.h               Op.h             PythonString.h     stdafx.h
     AttachOp.h     CuttingRate.h  HeeksCNC.h           OutputCanvas.h   PythonStuff.h      Tag.h
-    BOM.h          ZigZag.h       HeeksCNCInterface.h  PocketDlg.h      Raft.h             Tags.h
+    BOM.h          ZigZag.h       HeeksCNCInterface.h  PocketDlg.h      Tags.h
     Chamfer.h      DepthOp.h      HeeksCNCTypes.h      Pocket.h         RawMaterial.h      Tapping.h
     CNCConfig.h    Drilling.h     Inlay.h              Positioning.h    Reselect.h         Tools.h
     CNCPoint.h     Program.h      Interface.h          Probing.h        ScriptOp.h         TrsfNCCode.h
@@ -72,10 +72,10 @@ set( heekscnc_HDRS
    )
 
 set( heekscnc_SRCS
-    Adaptive.cpp     DepthOp.cpp            MachineState.cpp   Program.cpp          Tag.cpp
+    DepthOp.cpp            MachineState.cpp   Program.cpp          Tag.cpp
     AttachOp.cpp     NCCode.cpp             PythonString.cpp   Tags.cpp
     BOM.cpp          Drilling.cpp           Op.cpp             PythonStuff.cpp      Tapping.cpp
-    Chamfer.cpp      Operations.cpp         Raft.cpp           Tools.cpp
+    Chamfer.cpp      Operations.cpp         Tools.cpp
     CNCPoint.cpp     Excellon.cpp           OutputCanvas.cpp   RawMaterial.cpp      TrsfNCCode.cpp
     Contour.cpp      Fixture.cpp            Pocket.cpp         Reselect.cpp         TurnRough.cpp
     CounterBore.cpp  Fixtures.cpp           PocketDlg.cpp      ScriptOp.cpp         Waterline.cpp

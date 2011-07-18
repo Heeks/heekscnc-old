@@ -20,7 +20,6 @@
 #include "Pocket.h"
 #include "ZigZag.h"
 #include "Waterline.h"
-#include "Adaptive.h"
 #include "Drilling.h"
 #include "CTool.h"
 #include "Op.h"
@@ -38,7 +37,6 @@
 #include "interface/strconv.h"
 #include "MachineState.h"
 #include "AttachOp.h"
-#include "Raft.h"
 
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
@@ -624,7 +622,6 @@ Python CProgram::RewritePythonProgram()
 #ifndef STABLE_OPS_ONLY
 	CZigZag::number_for_stl_file = 1;
 	CWaterline::number_for_stl_file = 1;
-	CAdaptive::number_for_stl_file = 1;
 #endif
 	CAttachOp::number_for_stl_file = 1;
 
@@ -641,7 +638,6 @@ Python CProgram::RewritePythonProgram()
 	bool ocl_module_needed = false;
 	bool ocl_funcs_needed = false;
 	bool nc_attach_needed = false;
-	bool actp_funcs_needed = false;
 	bool turning_module_needed = false;
 
 	typedef std::vector< COp * > OperationsMap_t;
@@ -669,7 +665,6 @@ Python CProgram::RewritePythonProgram()
 				break;
 
 			case PocketType:
-			case RaftType:
 			case InlayType:
 				area_module_needed = true;
 				area_funcs_needed = true;
@@ -683,10 +678,6 @@ Python CProgram::RewritePythonProgram()
 			case ZigZagType:
 			case WaterlineType:
 				ocl_funcs_needed = true;
-				break;
-
-			case AdaptiveType:
-				actp_funcs_needed = true;
 				break;
 
 			case TurnRoughType:
@@ -816,14 +807,6 @@ Python CProgram::RewritePythonProgram()
 	if(ocl_funcs_needed)
 	{
 		python << _T("import ocl_funcs\n");
-	}
-
-	// actp
-	if(actp_funcs_needed)
-	{
-		python << _T("import actp_funcs\n");
-		python << _T("import actp\n");
-		python << _T("\n");
 	}
 
 	if(turning_module_needed)

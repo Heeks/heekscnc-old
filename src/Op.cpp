@@ -210,14 +210,8 @@ void COp::ReadDefaultValues()
 			default_tool = FIND_FIRST_TOOL( CToolParams::eDrill );
 			if (default_tool <= 0) default_tool = FIND_FIRST_TOOL( CToolParams::eCentreDrill );
 			break;
-		case AdaptiveType:
-			default_tool = FIND_FIRST_TOOL( CToolParams::eEndmill );
-			if (default_tool <= 0) default_tool = FIND_FIRST_TOOL( CToolParams::eSlotCutter );
-			if (default_tool <= 0) default_tool = FIND_FIRST_TOOL( CToolParams::eBallEndMill );
-			break;
 		case ProfileType:
 		case PocketType:
-		case RaftType:
 		case CounterBoreType:
 			default_tool = FIND_FIRST_TOOL( CToolParams::eEndmill );
 			if (default_tool <= 0) default_tool = FIND_FIRST_TOOL( CToolParams::eSlotCutter );
