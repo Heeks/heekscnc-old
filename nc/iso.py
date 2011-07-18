@@ -930,6 +930,7 @@ class Creator(nc.Creator):
     def probe_single_point(self, point_along_edge_x=None, point_along_edge_y=None, depth=None, retracted_point_x=None, retracted_point_y=None, destination_point_x=None, destination_point_y=None, intersection_variable_x=None, intersection_variable_y=None, probe_offset_x_component=None, probe_offset_y_component=None ):
         self.write_blocknum()
         self.write(self.SPACE() + (self.SET_TEMPORARY_COORDINATE_SYSTEM() + (' X 0 Y 0 Z 0') + ('\t(Temporarily make this the origin)\n')))
+
         if (self.fhv) : self.calc_feedrate_hv(1, 0)
         self.write_blocknum()
         self.write_feedrate()
@@ -937,10 +938,10 @@ class Creator(nc.Creator):
 
         self.rapid(point_along_edge_x,point_along_edge_y)
         self.rapid(retracted_point_x,retracted_point_y)
-        self.rapid(z=depth)
+        self.feed(z=depth)
 
         self.write_blocknum()
-        self.write(self.SPACE() + (self.PROBE_TOWARDS_WITH_SIGNAL() + (' X ' + (self.fmt % destination_point_x) + ' Y ' + (self.fmt % destination_point_y) ) + ('\t(Probe towards our destination point)\n')))
+        self.write((self.PROBE_TOWARDS_WITH_SIGNAL() + (' X ' + (self.fmt.string(destination_point_x)) + ' Y ' + (self.fmt.string(destination_point_y)) ) + ('\t(Probe towards our destination point)\n')))
 
         self.comment('Back off the workpiece and re-probe more slowly')
         self.write_blocknum()
@@ -955,7 +956,7 @@ class Creator(nc.Creator):
         self.write(self.SPACE() + self.FEEDRATE() + self.ffmt.string(self.fh / 2.0) + '\n')
 
         self.write_blocknum()
-        self.write(self.SPACE() + (self.PROBE_TOWARDS_WITH_SIGNAL() + (' X ' + (self.fmt % destination_point_x) + ' Y ' + (self.fmt % destination_point_y) ) + ('\t(Probe towards our destination point)\n')))
+        self.write((self.SPACE() + self.PROBE_TOWARDS_WITH_SIGNAL() + (' X ' + (self.fmt.string(destination_point_x)) + ' Y ' + (self.fmt.string(destination_point_y)) ) + ('\t(Probe towards our destination point)\n')))
 
         self.comment('Store the probed location somewhere we can get it again later')
         self.write_blocknum()
@@ -984,12 +985,13 @@ class Creator(nc.Creator):
         self.write(self.FEEDRATE() + ' [' + self.ffmt.string(self.fh) + ' / 5.0 ]')
         self.write('\t(Set the feed rate for probing)\n')
 
-        self.write_blocknum();
-        self.write(self.RAPID())
-        self.write(' X ' + x + ' Y ' + y + '\n')
+        if x != None and y != None:
+           self.write_blocknum();
+       	   self.write(self.RAPID())
+       	   self.write(' X ' + x + ' Y ' + y + '\n')
 
         self.write_blocknum()
-        self.write((self.PROBE_TOWARDS_WITH_SIGNAL() + ' Z ' + (self.fmt % depth) + ('\t(Probe towards our destination point)\n')))
+        self.write((self.PROBE_TOWARDS_WITH_SIGNAL() + ' Z ' + (self.fmt.string(depth)) + ('\t(Probe towards our destination point)\n')))
 
         self.comment('Store the probed location somewhere we can get it again later')
         self.write_blocknum()
@@ -1026,13 +1028,13 @@ class Creator(nc.Creator):
         self.write_blocknum()
         self.write(self.RAPID())
         if ((x1 != None) and (x2 != None)):
-            self.write((' X ' + '[[[' + x1 + '-' + x2 + '] / 2.0] + ' + x2 + ']'))
+            self.write((' X ' + '[[[' + x1 + ' - ' + x2 + '] / 2.0] + ' + x2 + ']'))
 
         if ((y1 != None) and (y2 != None)):
-            self.write((' Y ' + '[[[' + y1 + '-' + y2 + '] / 2.0] + ' + y2 + ']'))
+            self.write((' Y ' + '[[[' + y1 + ' - ' + y2 + '] / 2.0] + ' + y2 + ']'))
 
         if ((z1 != None) and (z2 != None)):
-            self.write((' Z ' + '[[[' + z1 + '-' + z2 + '] / 2.0] + ' + z2 + ']'))
+            self.write((' Z ' + '[[[' + z1 + ' - ' + z2 + '] / 2.0] + ' + z2 + ']'))
 
         self.write('\n')
 
@@ -1053,11 +1055,11 @@ class Creator(nc.Creator):
     def rapid_to_intersection(self, x1, y1, x2, y2, x3, y3, x4, y4, intersection_x, intersection_y, ua_numerator, ua_denominator, ua, ub_numerator, ub):
         self.comment('Find the intersection of the two lines made up by the four probed points')
         self.write_blocknum();
-        self.write(ua_numerator + '=[[[' + x4 + '-' + x3 + '] * [' + y1 + '-' + y3 + ']] - [[' + y4 + '-' + y3 + '] * [' + x1 + '-' + x3 + ']]]\n')
+        self.write(ua_numerator + '=[[[' + x4 + ' - ' + x3 + '] * [' + y1 + ' - ' + y3 + ']] - [[' + y4 + ' - ' + y3 + '] * [' + x1 + ' - ' + x3 + ']]]\n')
         self.write_blocknum();
-        self.write(ua_denominator + '=[[[' + y4 + '-' + y3 + '] * [' + x2 + '-' + x1 + ']] - [[' + x4 + '-' + x3 + '] * [' + y2 + '-' + y1 + ']]]\n')
+        self.write(ua_denominator + '=[[[' + y4 + ' - ' + y3 + '] * [' + x2 + ' - ' + x1 + ']] - [[' + x4 + ' - ' + x3 + '] * [' + y2 + ' - ' + y1 + ']]]\n')
         self.write_blocknum();
-        self.write(ub_numerator + '=[[[' + x2 + '-' + x1 + '] * [' + y1 + '-' + y3 + ']] - [[' + y2 + '-' + y1 + '] * [' + x1 + '-' + x3 + ']]]\n')
+        self.write(ub_numerator + '=[[[' + x2 + ' - ' + x1 + '] * [' + y1 + ' - ' + y3 + ']] - [[' + y2 + ' - ' + y1 + '] * [' + x1 + ' - ' + x3 + ']]]\n')
 
         self.comment('If they are not parallel')
         self.write('O900 IF [' + ua_denominator + ' NE 0]\n')
@@ -1089,20 +1091,20 @@ class Creator(nc.Creator):
     def rapid_to_rotated_coordinate(self, x1, y1, x2, y2, ref_x, ref_y, x_current, y_current, x_final, y_final):
         self.comment('Rapid to rotated coordinate')
         self.write_blocknum();
-        self.write( '#1 = [atan[' + y2 + '-' + y1 + ']/[' + x2 +' - ' + x1 + ']] (nominal_angle)\n')
+        self.write( '#1 = [atan[' + y2 + ' - ' + y1 + ']/[' + x2 +' - ' + x1 + ']] (nominal_angle)\n')
         self.write_blocknum();
         self.write( '#2 = [atan[' + ref_y + ']/[' + ref_x + ']] (reference angle)\n')
         self.write_blocknum();
         self.write( '#3 = [#1 - #2] (angle)\n' )
         self.write_blocknum();
-        self.write( '#4 = [[[' + (self.fmt % 0) + ' - ' + (self.fmt % x_current) + '] * COS[ #3 ]] - [[' + (self.fmt % 0) + ' - ' + (self.fmt % y_current) + '] * SIN[ #3 ]]]\n' )
+        self.write( '#4 = [[[' + (self.fmt.string(0)) + ' - ' + (self.fmt.string(x_current)) + '] * COS[ #3 ]] - [[' + (self.fmt.string(0)) + ' - ' + (self.fmt.string(y_current)) + '] * SIN[ #3 ]]]\n' )
         self.write_blocknum();
-        self.write( '#5 = [[[' + (self.fmt % 0) + ' - ' + (self.fmt % x_current) + '] * SIN[ #3 ]] + [[' + (self.fmt % 0) + ' - ' + (self.fmt % y_current) + '] * COS[ #3 ]]]\n' )
+        self.write( '#5 = [[[' + (self.fmt.string(0)) + ' - ' + (self.fmt.string(x_current)) + '] * SIN[ #3 ]] + [[' + (self.fmt.string(0)) + ' - ' + (self.fmt.string(y_current)) + '] * COS[ #3 ]]]\n' )
 
         self.write_blocknum();
-        self.write( '#6 = [[' + (self.fmt % x_final) + ' * COS[ #3 ]] - [' + (self.fmt % y_final) + ' * SIN[ #3 ]]]\n' )
+        self.write( '#6 = [[' + (self.fmt.string(x_final)) + ' * COS[ #3 ]] - [' + (self.fmt.string(y_final)) + ' * SIN[ #3 ]]]\n' )
         self.write_blocknum();
-        self.write( '#7 = [[' + (self.fmt % y_final) + ' * SIN[ #3 ]] + [' + (self.fmt % y_final) + ' * COS[ #3 ]]]\n' )
+        self.write( '#7 = [[' + (self.fmt.string(y_final)) + ' * SIN[ #3 ]] + [' + (self.fmt.string(y_final)) + ' * COS[ #3 ]]]\n' )
 
         self.write_blocknum();
         self.write( self.RAPID() + ' X [ #4 + #6 ] Y [ #5 + #7 ]\n' )
