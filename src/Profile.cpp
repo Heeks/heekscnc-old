@@ -989,9 +989,6 @@ class PickStart: public Tool{
 	const wxChar* GetTitle(){return _("Pick Start");}
 	void Run(){if(heeksCAD->PickPosition(_("Pick new start point"), object_for_tools->m_profile_params.m_start))object_for_tools->m_profile_params.m_start_given = true; heeksCAD->RefreshProperties();}
 	wxString BitmapPath(){ return _T("pickstart");}
-    
-	
-	
 };
 
 static PickStart pick_start;
@@ -1076,7 +1073,7 @@ void CProfile::CopyFrom(const HeeksObj* object)
 
 bool CProfile::CanAdd(HeeksObj* object)
 {
-	return ((object != NULL) && (object->GetType() == TagsType || object->GetType() == SketchType));
+	return ((object != NULL) && (object->GetType() == TagsType || object->GetType() == SketchType || object->GetType() == FixtureType));
 }
 
 bool CProfile::CanAddTo(HeeksObj* owner)
