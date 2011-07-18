@@ -188,7 +188,7 @@ class Creator(nc.Creator):
 
     def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None, machine_coordinates=None):
         self.cut_path()
-        self.original.rapid(x, y, z, a, b, c)
+        self.original.rapid(x, y, z, a, b, c, machine_coordinates)
         if x != None: self.x = x * units
         if y != None: self.y = y * units
         if z != None: self.z = z * units
