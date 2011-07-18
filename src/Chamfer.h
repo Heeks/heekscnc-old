@@ -27,6 +27,13 @@ public:
 	// the depth of cut.
 	double m_chamfer_width;
 
+	typedef enum {
+		eRightOrInside = -1,
+		eOn = 0,
+		eLeftOrOutside = +1
+	}eSide;
+	eSide m_tool_on_side;
+
 	void set_initial_values();
 	void write_values_to_config();
 	void GetProperties(CChamfer * parent, std::list<Property *> *list);
@@ -133,9 +140,13 @@ public:
 	void GetTools(std::list<Tool*>* t_list, const wxPoint* p);
 	void ReloadPointers();
 
+	std::list<double> GetProfileChamferingDepths(HeeksObj *child) const;
+
 	// This is the method that gets called when the operator hits the 'Python' button.  It generates a Python
 	// program whose job is to generate RS-274 GCode.
 	Python AppendTextToProgram(CMachineState *pMachineState);
+	Python AppendTextForCircularChildren(CMachineState *pMachineState, const double theta, HeeksObj *child, CTool *pChamferingBit);
+	Python AppendTextForProfileChildren(CMachineState *pMachineState, const double theta, HeeksObj *child, CTool *pChamferingBit);
 
 	static HeeksObj* ReadFromXMLElement(TiXmlElement* pElem);
 
