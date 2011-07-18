@@ -51,8 +51,6 @@
 			<Add option="-lpthread -ldl -lutil -lm" />
 			<Add option="`python-config --libs`" />
 		</Linker>
-		<Unit filename="src/Adaptive.cpp" />
-		<Unit filename="src/Adaptive.h" />
 		<Unit filename="src/AreaLibrary.h" />
 		<Unit filename="src/AttachOp.cpp" />
 		<Unit filename="src/AttachOp.h" />

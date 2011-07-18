@@ -28,14 +28,8 @@
 #include "NCCode.h"
 #include "Profile.h"
 #include "Pocket.h"
-#ifndef STABLE_OPS_ONLY
-#include "Raft.h"
-#endif
 #include "ZigZag.h"
 #include "Waterline.h"
-#ifndef STABLE_OPS_ONLY
-#include "Adaptive.h"
-#endif
 #include "Drilling.h"
 #include "Tapping.h"
 #include "Positioning.h"
@@ -272,21 +266,6 @@ static void NewPocketOpMenuCallback(wxCommandEvent &event)
 
 #ifndef STABLE_OPS_ONLY
 
-static void NewRaftOpMenuCallback(wxCommandEvent &event)
-{
-	std::list<int> tools;
-	std::list<int> sketches;
-	if(GetSketches(sketches, tools))
-	{
-		heeksCAD->CreateUndoPoint();
-		CRaft *new_object = new CRaft(sketches, (tools.size()>0)?(*tools.begin()):-1 );
-		theApp.m_program->Operations()->Add(new_object, NULL);
-		heeksCAD->ClearMarkedList();
-		heeksCAD->Mark(new_object);
-		heeksCAD->Changed();
-	}
-}
-
 static void NewZigZagOpMenuCallback(wxCommandEvent &event)
 {
 	// check for at least one solid selected
@@ -353,55 +332,6 @@ static void NewWaterlineOpMenuCallback(wxCommandEvent &event)
 
 	heeksCAD->CreateUndoPoint();
 	CWaterline *new_object = new CWaterline(solids);
-	theApp.m_program->Operations()->Add(new_object, NULL);
-	heeksCAD->ClearMarkedList();
-	heeksCAD->Mark(new_object);
-	heeksCAD->Changed();
-}
-static void NewAdaptiveOpMenuCallback(wxCommandEvent &event)
-{
-	std::list<int> solids;
-	std::list<int> sketches;
-	int tool_number = 0;
-	int reference_object_type = -1;
-	unsigned int reference_object_id = -1;
-
-	const std::list<HeeksObj*>& list = heeksCAD->GetMarkedList();
-	for(std::list<HeeksObj*>::const_iterator It = list.begin(); It != list.end(); It++)
-	{
-		HeeksObj* object = *It;
-		if(object->GetType() == SolidType || object->GetType() == StlSolidType)solids.push_back(object->m_id);
-		if(object->GetType() == SketchType) sketches.push_back(object->m_id);
-		if(object->GetType() == ToolType) tool_number = ((CTool *)object)->m_tool_number;
-		if((object->GetType() == PointType) ||
-		   (object->GetType() == DrillingType))
-		{
-			reference_object_type = object->GetType();
-			reference_object_id = object->m_id;
-		} // End if - then
-	}
-
-	// if no selected solids,
-	if(solids.size() == 0)
-	{
-		// use all the solids in the drawing
-		for(HeeksObj* object = heeksCAD->GetFirstObject();object; object = heeksCAD->GetNextObject())
-		{
-			if(object->GetType() == SolidType || object->GetType() == StlSolidType)solids.push_back(object->m_id);
-		}
-	}
-
-	if(solids.size() == 0)
-	{
-		wxMessageBox(_("There are no solids!"));
-		return;
-	}
-	heeksCAD->CreateUndoPoint();
-	CAdaptive *new_object = new CAdaptive(	solids,
-						sketches,
-						tool_number,
-						reference_object_type,
-						reference_object_id);
 	theApp.m_program->Operations()->Add(new_object, NULL);
 	heeksCAD->ClearMarkedList();
 	heeksCAD->Mark(new_object);
@@ -1352,9 +1282,6 @@ static void AddToolBars()
 		heeksCAD->StartToolBarFlyout(_("Milling operations"));
 		heeksCAD->AddFlyoutButton(_("Profile"), ToolImage(_T("opprofile")), _("New Profile Operation..."), NewProfileOpMenuCallback);
 		heeksCAD->AddFlyoutButton(_("Pocket"), ToolImage(_T("pocket")), _("New Pocket Operation..."), NewPocketOpMenuCallback);
-#ifndef STABLE_OPS_ONLY
-		heeksCAD->AddFlyoutButton(_("Adaptive"), ToolImage(_T("adapt")), _("New Special Adaptive Roughing Operation..."), NewAdaptiveOpMenuCallback);
-#endif
 		heeksCAD->AddFlyoutButton(_("Drill"), ToolImage(_T("drilling")), _("New Drill Cycle Operation..."), NewDrillingOpMenuCallback);
 #ifndef STABLE_OPS_ONLY
 		heeksCAD->AddFlyoutButton(_("CounterBore"), ToolImage(_T("counterbore")), _("New CounterBore Cycle Operation..."), NewCounterBoreOpMenuCallback);
@@ -1373,12 +1300,6 @@ static void AddToolBars()
 		heeksCAD->AddFlyoutButton(_("Attach"), ToolImage(_T("attach")), _("New Attach Operation..."), NewAttachOpMenuCallback);
 		heeksCAD->AddFlyoutButton(_("Unattach"), ToolImage(_T("unattach")), _("New Unattach Operation..."), NewUnattachOpMenuCallback);
 		heeksCAD->EndToolBarFlyout((wxToolBar*)(theApp.m_machiningBar));
-
-#ifndef STABLE_OPS_ONLY
-		heeksCAD->StartToolBarFlyout(_("Additive operations"));
-		heeksCAD->AddFlyoutButton(_("Raft"), ToolImage(_T("raft")), _("New Raft Operation..."), NewRaftOpMenuCallback);
-		heeksCAD->EndToolBarFlyout((wxToolBar*)(theApp.m_machiningBar));
-#endif
 
 		heeksCAD->StartToolBarFlyout(_("Other operations"));
 		heeksCAD->AddFlyoutButton(_("Positioning"), ToolImage(_T("locating")), _("New Positioning Operation..."), NewPositioningOpMenuCallback);
@@ -1485,8 +1406,6 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 		+ _T("\n\n") + _("geometry code, donated by Geoff Hawkesford, Camtek GmbH http://www.peps.de/")
 		+ _T("\n") + _("pocketing code from http://code.google.com/p/libarea/ , derived from the kbool library written by Klaas Holwerda http://boolean.klaasholwerda.nl/bool.html")
 		+ _T("\n") + _("Zig zag code from opencamlib http://code.google.com/p/opencamlib/")
-		+ _T("\n") + _("Adaptive Roughing code from http://code.google.com/p/libactp/, using code written in 2004")
-		+ _T("\n") + _("For a more modern version of adaptive roughing, see Julian Todd and Martin Dunschen of http://www.freesteel.co.uk/")
 		+ _T("\n\n") + _("This HeeksCNC software installation is restricted by the GPL license http://www.gnu.org/licenses/gpl-3.0.txt")
 		+ _T("\n") + _("  which means it is free and open source, and must stay that way")
 		);
@@ -1503,9 +1422,6 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	wxMenu *menuMillingOperations = new wxMenu;
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Profile Operation..."), ToolImage(_T("opprofile")), NewProfileOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Pocket Operation..."), ToolImage(_T("pocket")), NewPocketOpMenuCallback);
-#ifndef STABLE_OPS_ONLY
-	heeksCAD->AddMenuItem(menuMillingOperations, _("Adaptive Roughing Operation..."), ToolImage(_T("adapt")), NewAdaptiveOpMenuCallback);
-#endif
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Drilling Operation..."), ToolImage(_T("drilling")), NewDrillingOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Chamfer Operation..."), ToolImage(_T("opchamfer")), NewChamferOpMenuCallback);
 #ifndef STABLE_OPS_ONLY
@@ -1522,12 +1438,6 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 #endif
 	heeksCAD->AddMenuItem(menu3dMillingOperations, _("Attach Operation..."), ToolImage(_T("attach")), NewAttachOpMenuCallback);
 	heeksCAD->AddMenuItem(menu3dMillingOperations, _("Unattach Operation..."), ToolImage(_T("unattach")), NewUnattachOpMenuCallback);
-
-	// Additive Operations menu
-#ifndef STABLE_OPS_ONLY
-	wxMenu *menuAdditiveMillingOperations = new wxMenu;
-	heeksCAD->AddMenuItem(menuAdditiveMillingOperations, _("Raft Operation..."), ToolImage(_T("raft")), NewRaftOpMenuCallback);
-#endif
 
 	wxMenu *menuOperations = new wxMenu;
 #ifndef STABLE_OPS_ONLY
@@ -1578,9 +1488,6 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	wxMenu *menuMachining = new wxMenu;
 	heeksCAD->AddMenuItem(menuMachining, _("Add New Milling Operation"), ToolImage(_T("ops")), NULL, NULL, menuMillingOperations);
 	heeksCAD->AddMenuItem(menuMachining, _("Add New 3D Operation"), ToolImage(_T("ops")), NULL, NULL, menu3dMillingOperations);
-#ifndef STABLE_OPS_ONLY
-	heeksCAD->AddMenuItem(menuMachining, _("Add New Additive Operation"), ToolImage(_T("ops")), NULL, NULL, menuAdditiveMillingOperations);
-#endif
 	heeksCAD->AddMenuItem(menuMachining, _("Add Other Operation"), ToolImage(_T("ops")), NULL, NULL, menuOperations);
 	heeksCAD->AddMenuItem(menuMachining, _("Add New Tool"), ToolImage(_T("tools")), NULL, NULL, menuTools);
 #ifndef STABLE_OPS_ONLY
@@ -1614,9 +1521,7 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	CProfile::ReadFromConfig();
 	CPocket::ReadFromConfig();
 	CSpeedOp::ReadFromConfig();
-#ifndef STABLE_OPS_ONLY
-	CRaft::ReadFromConfig();
-#endif
+
 	CSendToMachine::ReadFromConfig();
 	config.Read(_T("UseClipperNotBoolean"), &m_use_Clipper_not_Boolean, false);
 	config.Read(_T("UseDOSNotUnix"), &m_use_DOS_not_Unix, false);
@@ -1640,10 +1545,8 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	heeksCAD->RegisterReadXMLfunction("Profile", CProfile::ReadFromXMLElement);
 	heeksCAD->RegisterReadXMLfunction("Pocket", CPocket::ReadFromXMLElement);
 #ifndef STABLE_OPS_ONLY
-	heeksCAD->RegisterReadXMLfunction("Raft", CRaft::ReadFromXMLElement);
 	heeksCAD->RegisterReadXMLfunction("ZigZag", CZigZag::ReadFromXMLElement);
 	heeksCAD->RegisterReadXMLfunction("Waterline", CWaterline::ReadFromXMLElement);
-	heeksCAD->RegisterReadXMLfunction("Adaptive", CAdaptive::ReadFromXMLElement);
 #endif
 	heeksCAD->RegisterReadXMLfunction("Drilling", CDrilling::ReadFromXMLElement);
 	heeksCAD->RegisterReadXMLfunction("Locating", CPositioning::ReadFromXMLElement);
@@ -1917,7 +1820,6 @@ void CHeeksCNCApp::GetOptions(std::list<Property *> *list){
 	CProfile::GetOptions(&(machining_options->m_list));
 	CPocket::GetOptions(&(machining_options->m_list));
 #ifndef STABLE_OPS_ONLY
-	CRaft::GetOptions(&(machining_options->m_list));
 	CContour::GetOptions(&(machining_options->m_list));
 	CInlay::GetOptions(&(machining_options->m_list));
 #endif
@@ -1943,9 +1845,6 @@ void CHeeksCNCApp::OnFrameDelete()
 	CNCCode::WriteColorsToConfig();
 	CProfile::WriteToConfig();
 	CPocket::WriteToConfig();
-#ifndef STABLE_OPS_ONLY
-	CRaft::WriteToConfig();
-#endif
 	CSpeedOp::WriteToConfig();
 	CSendToMachine::WriteToConfig();
 	config.Write(_T("UseClipperNotBoolean"), m_use_Clipper_not_Boolean);
@@ -2014,7 +1913,6 @@ wxString HeeksCNCType( const int type )
 	case ProfileType:       return(_("Profile"));
 	case PocketType:       return(_("Pocket"));
 	case ZigZagType:       return(_("ZigZag"));
-	case AdaptiveType:       return(_("Adaptive"));
 	case DrillingType:       return(_("Drilling"));
 	case ToolType:       return(_("Tool"));
 	case ToolsType:       return(_("Tools"));
@@ -2040,7 +1938,6 @@ wxString HeeksCNCType( const int type )
 	case AttachOpType:       return(_("AttachOp"));
 	case UnattachOpType:       return(_("UnattachOp"));
 	case WaterlineType:       return(_("Waterline"));
-	case RaftType:       return(_("Raft"));
 	case TappingType:       return(_("Tapping"));
 
 	default:
