@@ -26,17 +26,17 @@ class Program(Object):
         self.path_control_mode = config.ReadInt("ProgramPathControlMode", PATH_CONTROL_UNDEFINED)
         self.motion_blending_tolerance = config.ReadFloat("ProgramMotionBlendingTolerance", 0.0)    # Only valid if m_path_control_mode == eBestPossibleSpeed
         self.naive_cam_tolerance = config.ReadFloat("ProgramNaiveCamTolerance", 0.0)        # Only valid if m_path_control_mode == eBestPossibleSpeed
-        
+
     def TypeName(self):
         return "Program"
-    
+
     def icon(self):
         # the name of the PNG file in the HeeksCNC icons folder
         return "program"
-    
+
     def CanBeDeleted(self):
         return False
-    
+
     def add_initial_children(self):
         # add tools, operations, etc.
         self.children = []
@@ -47,7 +47,7 @@ class Program(Object):
         self.Add(self.operations)
         self.nccode = NCCode()
         self.Add(self.nccode)
-        
+
     def LanguageCorrection(self):
         '''
         // Language and Windows codepage detection and correction
@@ -111,7 +111,7 @@ class Program(Object):
         #endif
         '''
         pass
-    
+
     def RewritePythonProgram(self):
         HeeksCNC.program_window.Clear()
         self.python_program = ""
@@ -124,7 +124,7 @@ class Program(Object):
         area_funcs_needed = False
 
         active_operations = []
-        
+
         for operation in self.operations.children:
             if operation.active:
                 active_operations.append(operation)
@@ -135,12 +135,12 @@ class Program(Object):
                 elif operation.__class__.__name__ == "Pocket":
                     area_module_needed = True
                     area_funcs_needed = True
-                    
+
         self.LanguageCorrection()
 
         # add standard stuff at the top
         self.python_program += "import sys\n"
-        
+
         self.python_program += "sys.path.insert(0,'" + HeeksCNC.heekscnc_path + "')\n"
         self.python_program += "import math\n"
 
@@ -187,7 +187,7 @@ class Program(Object):
         self.python_program += "program_end()\n"
         self.python_program += "from nc.nc import creator\n"
         self.python_program += "creator.file_close()\n"
-        
+
         HeeksCNC.program_window.AppendText(self.python_program)
         if len(self.python_program) > len(HeeksCNC.program_window.textCtrl.GetValue()):
             # The python program is longer than the text control object can handle.  The maximum
@@ -204,11 +204,11 @@ class Program(Object):
             HeeksCNC.program_window.AppendText("to display in this window.\n")
             HeeksCNC.program_window.AppendText("Please edit the python program directly at \n")
             HeeksCNC.program_window.AppendText(file_str)
-    
+
     def GetOutputFileName(self):
         if self.output_file_name_follows_data_file_name == False:
             return self.output_file
-        
+
         filepath = HeeksCNC.cad.GetFileFullPath()
         if filepath == None:
             # The user hasn't assigned a filename yet.  Use the default.
@@ -217,26 +217,24 @@ class Program(Object):
         pos = filepath.rfind('.')
         if pos == -1:
             return self.output_file
-        
+
         filepath = filepath[0:pos] + ".tap"
         return filepath
-    
+
     def GetMachines(self):
         machines_file = self.alternative_machines_file
         if machines_file == "":
             machines_file = HeeksCNC.heekscnc_path + "/nc/machines2.txt"
-            
-        print 'machines_file = ', machines_file
-            
+
         f = open(machines_file)
 
         machines = []
-        
+
         while (True):
             line = f.readline()
             if (len(line) == 0) : break
             line = line.rstrip('\n')
-            
+
             machine = Machine()
             space_pos = line.find(' ')
             if space_pos == -1:
@@ -248,7 +246,7 @@ class Program(Object):
             machines.append(machine)
 
         return machines
-    
+
     def GetMachine(self, file_name):
         machines = self.GetMachines()
         for machine in machines:
@@ -257,7 +255,7 @@ class Program(Object):
         if len(machines):
             return machines[0]
         return None
-        
+
     def Edit(self):
         if HeeksCNC.widgets == HeeksCNC.WIDGETS_WX:
             from wxProgramDlg import ProgramDlg
@@ -265,4 +263,3 @@ class Program(Object):
             dlg = ProgramDlg(self)
             return dlg.ShowModal() == wx.ID_OK
         return False
-        
