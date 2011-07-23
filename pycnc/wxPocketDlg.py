@@ -35,7 +35,7 @@ class PocketDlg(HDialog):
     def __init__(self, pocket):
         HDialog.__init__(self, "Pocket Operation")
         self.pocket = pocket
-        
+
         self.general_bitmap = None
         self.step_over_bitmap = None
         self.material_allowance_bitmap = None
@@ -51,10 +51,10 @@ class PocketDlg(HDialog):
         self.final_depth_bitmap = None
         self.step_down_bitmap = None
         self.entry_move_bitmap = None
-        
+
         self.ignore_event_functions = True
         sizerMain = wx.BoxSizer(wx.HORIZONTAL)
-        
+
         #add left sizer
         sizerLeft = wx.BoxSizer(wx.VERTICAL)
         sizerMain.Add( sizerLeft, 0, wx.ALL, self.control_border )
@@ -93,7 +93,7 @@ class PocketDlg(HDialog):
         # add all the controls to the left side
         self.idsSketches = GeomCtrl(self, ID_SKETCHES)
         self.AddLabelAndControl(sizerLeft, "sketches", self.idsSketches)
-        
+
         btn_pick_sketches = wx.Button(self, ID_PICK_SKETCHES)
         self.AddLabelAndControl(sizerLeft, "pick sketches", btn_pick_sketches)
         self.lgthStepOver = LengthCtrl(self, ID_STEP_OVER)
@@ -107,7 +107,7 @@ class PocketDlg(HDialog):
         self.cmbEntryMove = wx.ComboBox(self, ID_DESCENT_STRATGEY, choices = ["Plunge", "Ramp", "Helical"])
         self.AddLabelAndControl(sizerLeft, "entry move", self.cmbEntryMove)
 
-        self.tools_for_combo = HeeksCNC.program.tools.FindAllTools()
+        self.tools_for_combo = HeeksCNC.heekscnc.program.tools.FindAllTools()
 
         tool_choices = []
         for tool in self.tools_for_combo:
@@ -117,25 +117,25 @@ class PocketDlg(HDialog):
 
         self.chkUseZigZag = wx.CheckBox( self, ID_USE_ZIG_ZAG, "use zig zag" )
         sizerLeft.Add( self.chkUseZigZag, 0, wx.ALL, self.control_border )
-        
+
         self.chkKeepToolDown = wx.CheckBox( self, ID_KEEP_TOOL_DOWN, "keep tool down" )
         sizerLeft.Add( self.chkKeepToolDown, 0, wx.ALL, self.control_border )
-        
+
         self.dblZigAngle = DoubleCtrl(self, ID_ZIG_ANGLE)
         self.AddLabelAndControl(sizerLeft, "zig zag angle", self.dblZigAngle)
 
         self.lgthClearanceHeight = LengthCtrl(self, ID_CLEARANCE_HEIGHT)
         self.AddLabelAndControl(sizerLeft, "clearance height", self.lgthClearanceHeight)
-        
+
         self.lgthRapidDownToHeight = LengthCtrl(self, ID_RAPID_SAFETY_SPACE)
         self.AddLabelAndControl(sizerLeft, "rapid safety space", self.lgthRapidDownToHeight)
-        
+
         self.lgthStartDepth = LengthCtrl(self, ID_START_DEPTH)
         self.AddLabelAndControl(sizerLeft, "start depth", self.lgthStartDepth)
-        
+
         self.lgthFinalDepth = LengthCtrl(self, ID_FINAL_DEPTH)
         self.AddLabelAndControl(sizerLeft, "final depth", self.lgthFinalDepth)
-        
+
         self.lgthStepDown = LengthCtrl(self, ID_STEP_DOWN)
         self.AddLabelAndControl(sizerLeft, "step down", self.lgthStepDown)
 
@@ -157,10 +157,10 @@ class PocketDlg(HDialog):
         self.Bind(wx.EVT_CHECKBOX, self.OnCheckUseZigZag, self.chkUseZigZag)
         self.Bind(wx.EVT_COMBOBOX, self.OnComboTool, self.cmbTool)
         self.Bind(wx.EVT_BUTTON, self.OnPickSketches, btn_pick_sketches)
-        
+
     def OnChildFocus(self, event):
         if self.ignore_event_functions: return
-        
+
         if event.GetWindow():
             self.SetPicture()
 
@@ -180,12 +180,12 @@ class PocketDlg(HDialog):
         pass
         #if self.ignore_event_functions: return
         #self.SetPicture()
-    
+
     def OnPickSketches(self, event):
-        if HeeksCNC.cad.hide_window_on_pick_sketches():
+        if HeeksCNC.heekscnc.cad.hide_window_on_pick_sketches():
             self.Show(False)
-        sketches = HeeksCNC.cad.pick_sketches()
-        if HeeksCNC.cad.hide_window_on_pick_sketches():
+        sketches = HeeksCNC.heekscnc.cad.pick_sketches()
+        if HeeksCNC.heekscnc.cad.hide_window_on_pick_sketches():
             self.Show()
         self.idsSketches.SetFromGeomList(sketches)
 
@@ -214,7 +214,7 @@ class PocketDlg(HDialog):
         self.pocket.spindle_speed = self.dblSpindleSpeed.GetValue()
         self.pocket.comment = self.txtComment.GetValue()
         self.pocket.active = self.chkActive.GetValue()
-    
+
         # get the tool number
         self.pocket.tool_number = 0
         if self.cmbTool.GetSelection() >= 0:

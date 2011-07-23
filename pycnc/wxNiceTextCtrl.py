@@ -5,7 +5,7 @@ class DoubleCtrl(wx.TextCtrl):
     def __init__(self, parent, id = wx.ID_ANY, factor = 1.0):
         wx.TextCtrl.__init__(self, parent, id)
         self.factor = factor
-        
+
     def GetValue(self):
         try:
             return float(wx.TextCtrl.GetValue(self))/self.factor
@@ -14,20 +14,20 @@ class DoubleCtrl(wx.TextCtrl):
 
     def DoubleToString(self, value):
         return str(value * self.factor)
-    
+
     def SetValue(self, value):
         wx.TextCtrl.SetValue(self, self.DoubleToString(value))
-        
+
 class LengthCtrl(DoubleCtrl):
     def __init__(self, parent, id = wx.ID_ANY):
-        factor = 1.0/HeeksCNC.cad.get_view_units()
+        factor = 1.0/HeeksCNC.heekscnc.cad.get_view_units()
         DoubleCtrl.__init__(self, parent, id, factor)
-        
+
 class GeomCtrl(wx.TextCtrl):
     # for now this is just a list of profile names with quotes around them and spaces between them, but later it might have a diagram showing the geometry
     def __init__(self, parent, id):
         wx.TextCtrl.__init__(self, parent, id)
-        
+
     def GetGeomList(self):
         str = wx.TextCtrl.GetValue(self)
         str = str.replace('\\', '/')
@@ -53,15 +53,10 @@ class GeomCtrl(wx.TextCtrl):
             geom_list.append(s)
             s = ""
         return geom_list
-    
+
     def SetFromGeomList(self, geom_list):
-        first = True
-        str = ""
+        s = ""
         for geom in geom_list:
-            if first == False:
-                str = str + " "
-            else:
-                first = False
-            str += geom
-        wx.TextCtrl.SetValue(self, str)
-        
+            s = s + " " + str(geom)
+        wx.TextCtrl.SetValue(self, s[1:])
+
