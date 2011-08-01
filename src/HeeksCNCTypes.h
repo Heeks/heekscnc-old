@@ -13,7 +13,6 @@ enum{
 	ProfileType,
 	PocketType,
 	ZigZagType,
-	AdaptiveType,
 	DrillingType,
 	ToolType,
 	ToolsType,
@@ -39,7 +38,6 @@ enum{
 	AttachOpType,
 	UnattachOpType,
 	WaterlineType,
-	RaftType,
 	TappingType,
 	HeeksCNCMaximumType
 };
