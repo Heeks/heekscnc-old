@@ -58,8 +58,8 @@ class Object:
         parent = self.GetParent()
         if parent != None:
             parent.children.remove(self)
-        HeeksCNC.tree.Remove(self)
-        HeeksCNC.tree.Refresh()
+        HeeksCNC.heekscnc.tree.Remove(self)
+        HeeksCNC.heekscnc.tree.Refresh()
 
     def GetParent(self):
         if self.parent_index == None:

@@ -1,5 +1,7 @@
 
 #include "stdafx.h"
+#ifndef STABLE_OPS_ONLY
+
 #include "Chamfer.h"
 #include "interface/PropertyLength.h"
 #include "CNCPoint.h"
@@ -921,3 +923,5 @@ bool CChamfer::operator== ( const CChamfer & rhs ) const
 
 	return(CDepthOp::operator==(rhs));
 }
+
+#endif

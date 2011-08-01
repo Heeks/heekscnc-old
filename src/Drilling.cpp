@@ -258,8 +258,8 @@ Python CDrilling::AppendTextToProgram( CMachineState *pMachineState )
 			<< _T("dwell=") << m_params.m_dwell << _T(", ")
 			<< _T("peck_depth=") << m_params.m_peck_depth/theApp.m_program->m_units << _T(", ")
 			<< _T("retract_mode=") << m_params.m_retract_mode << _T(", ")
-			<< _T("spindle_mode=") << m_params.m_spindle_mode << _T(", ")
-			<< _T("clearance_height=") << m_params.ClearanceHeight()
+			<< _T("spindle_mode=") << m_params.m_spindle_mode// << _T(", ")
+			//<< _T("clearance_height=") << m_params.ClearanceHeight()
 			<< _T(")\n");
         pMachineState->Location(point); // Remember where we are.
 	} // End for
@@ -1055,15 +1055,15 @@ double CDrillingParams::ClearanceHeight() const
 		// We need to figure out which is the 'active' fixture and return
 		// the clearance height from that fixture.
 
+#ifndef STABLE_OPS_ONLY
 		if (theApp.m_program->m_active_machine_state != NULL)
 		{
 			return(theApp.m_program->m_active_machine_state->Fixture().m_params.m_clearance_height);
 		}
 		else
-		{
+#endif
 			// This should not occur.  In any case, use the clearance value from the individual operation.
 			return(m_clearance_height);
-		}
 
 	case CProgram::eClearanceDefinedByOperation:
 	default:
