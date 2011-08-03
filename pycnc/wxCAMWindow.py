@@ -65,4 +65,4 @@ class CAMWindow(wx.ScrolledWindow):
     def remove(self, object):
         #add a tree object to the tree control
         self.tree.Delete(self.object_map[object.index])
-        self.object_map.remove(object.index)
+        del self.object_map[object.index]

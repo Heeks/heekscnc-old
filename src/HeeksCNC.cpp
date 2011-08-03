@@ -464,7 +464,7 @@ static void NewTappingOpMenuCallback(wxCommandEvent &event)
 	heeksCAD->Changed();
 }
 
-
+#ifndef STABLE_OPS_ONLY
 static void NewChamferOpMenuCallback(wxCommandEvent &event)
 {
 	CDrilling::Symbols_t symbols;
@@ -499,6 +499,7 @@ static void NewChamferOpMenuCallback(wxCommandEvent &event)
 	heeksCAD->Mark(new_object);
 	heeksCAD->Changed();
 }
+#endif
 
 static void NewAttachOpMenuCallback(wxCommandEvent &event)
 {
@@ -1287,8 +1288,8 @@ static void AddToolBars()
 		heeksCAD->AddFlyoutButton(_("CounterBore"), ToolImage(_T("counterbore")), _("New CounterBore Cycle Operation..."), NewCounterBoreOpMenuCallback);
 		heeksCAD->AddFlyoutButton(_("Contour"), ToolImage(_T("opcontour")), _("New Contour Operation..."), NewContourOpMenuCallback);
 		heeksCAD->AddFlyoutButton(_("Inlay"), ToolImage(_T("opinlay")), _("New Inlay Operation..."), NewInlayOpMenuCallback);
-#endif
 		heeksCAD->AddFlyoutButton(_("Chamfer"), ToolImage(_T("opchamfer")), _("New Chamfer Operation..."), NewChamferOpMenuCallback);
+#endif
 		heeksCAD->AddFlyoutButton(_("Tap"), ToolImage(_T("optap")), _("New Tapping Operation..."), NewTappingOpMenuCallback);
 		heeksCAD->EndToolBarFlyout((wxToolBar*)(theApp.m_machiningBar));
 
@@ -1423,8 +1424,8 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Profile Operation..."), ToolImage(_T("opprofile")), NewProfileOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Pocket Operation..."), ToolImage(_T("pocket")), NewPocketOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Drilling Operation..."), ToolImage(_T("drilling")), NewDrillingOpMenuCallback);
-	heeksCAD->AddMenuItem(menuMillingOperations, _("Chamfer Operation..."), ToolImage(_T("opchamfer")), NewChamferOpMenuCallback);
 #ifndef STABLE_OPS_ONLY
+	heeksCAD->AddMenuItem(menuMillingOperations, _("Chamfer Operation..."), ToolImage(_T("opchamfer")), NewChamferOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("CounterBore Operation..."), ToolImage(_T("counterbore")), NewCounterBoreOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Contour Operation..."), ToolImage(_T("opcontour")), NewContourOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Inlay Operation..."), ToolImage(_T("opinlay")), NewInlayOpMenuCallback);
@@ -1570,9 +1571,7 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	heeksCAD->RegisterReadXMLfunction("CuttingRate", CCuttingRate::ReadFromXMLElement);
 #ifndef STABLE_OPS_ONLY
 	heeksCAD->RegisterReadXMLfunction("Fixtures", CFixtures::ReadFromXMLElement);
-#endif
 	heeksCAD->RegisterReadXMLfunction("Chamfer", CChamfer::ReadFromXMLElement);
-#ifndef STABLE_OPS_ONLY
 	heeksCAD->RegisterReadXMLfunction("Contour", CContour::ReadFromXMLElement);
 	heeksCAD->RegisterReadXMLfunction("Inlay", CInlay::ReadFromXMLElement);
 #endif
