@@ -1,4 +1,5 @@
 
+#ifndef STABLE_OPS_ONLY
 #ifndef CHAMFER_CLASS_DEFINITION
 #define CHAMFER_CLASS_DEFINITION
 
@@ -161,3 +162,4 @@ public:
 
 
 #endif // CHAMFER_CLASS_DEFINITION
+#endif
