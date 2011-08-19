@@ -175,11 +175,11 @@ def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0, step_over = 1
 
       room_to_expand = True
       # while (room_to_expand == True):
-      cutter = cutting_tool(working_diameter, corner_radius, 10)
+      cutter = cutting_tool(working_diameter, corner_radius, 1000) # FIXME hard coded cutter length
 
       waterline = ocl.Waterline()
       waterline.setSTL(s)
-      waterline.setSampling(tolerance)
+      waterline.setSampling(step_over) # Anders says this is like moving in a grid pattern around the model. Sampling is the resolution of the move
       waterline.setCutter(cutter)
       waterline.setZ(z)
       waterline.run()
@@ -189,19 +189,19 @@ def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0, step_over = 1
          if ((cutter_loop[0].z != tool_location.z) or (tool_location.distance(cutter_loop[0]) > (tool_diameter / 2.0))):
             # Move above the starting point.
             rapid(z = clearance / units)
-            rapid(x=cutter_loop[0].x, y=cutter_loop[0].y)
-            tool_location.x = cutter_loop[0].x
-            tool_location.y = cutter_loop[0].y
+            rapid(x=cutter_loop[0].x / units, y=cutter_loop[0].y / units)
+            tool_location.x = cutter_loop[0].x / units
+            tool_location.y = cutter_loop[0].y / units
             tool_location.z = clearance / units
 
             # Feed down to the cutting depth
-            rapid(x=cutter_loop[0].x, y=cutter_loop[0].y)
-            tool_location.x = cutter_loop[0].x
-            tool_location.y = cutter_loop[0].y
+            rapid(x=cutter_loop[0].x / units, y=cutter_loop[0].y / units)
+            tool_location.x = cutter_loop[0].x / units
+            tool_location.y = cutter_loop[0].y / units
 
          # Cut around the solid at this level.
          for point in cutter_loop:
-            feed( x=point.x, y=point.y, z=point.z )
+            feed( x=point.x  / units, y=point.y / units, z=point.z / units )
             tool_location = point;
             #if (point.x < (x0-step_over)) or (point.x > (x1+step_over)) or (point.y < (y0-step_over)) or (point.y > (y1+step_over)):
             #   room_to_expand = False

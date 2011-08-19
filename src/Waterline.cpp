@@ -250,7 +250,7 @@ Python CWaterline::AppendTextToProgram(CMachineState *pMachineState)
 	heeksCAD->Changed();
 
     python << _T("ocl_funcs.waterline( filepath = ") << PythonString(filepath.GetFullPath()) << _T(", ")
-            << _T("tool_diameter = ") << pTool->CuttingRadius() * 2.0 << _T(", ")
+            << _T("tool_diameter = ") << pTool->CuttingRadius() * 2.0 / theApp.m_program->m_units << _T(", ")
             << _T("corner_radius = ") << pTool->m_params.m_corner_radius / theApp.m_program->m_units << _T(", ")
             << _T("step_over = ") << m_params.m_step_over / theApp.m_program->m_units << _T(", ")
             << _T("mat_allowance = ") << m_params.m_material_allowance / theApp.m_program->m_units << _T(", ")
@@ -264,7 +264,7 @@ Python CWaterline::AppendTextToProgram(CMachineState *pMachineState)
             << _T("y0 = ") << m_params.m_box.m_x[1] / theApp.m_program->m_units << _T(", ")
             << _T("x1 = ") << m_params.m_box.m_x[3] / theApp.m_program->m_units << _T(", ")
             << _T("y1 = ") << m_params.m_box.m_x[4] / theApp.m_program->m_units << _T(", ")
-            << _T("tolerance = ") << m_params.m_tolerance << _T(")\n");
+            << _T("tolerance = ") << m_params.m_tolerance / theApp.m_program->m_units<< _T(")\n");
 
 	return(python);
 }
