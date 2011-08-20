@@ -1,4 +1,3 @@
-
 [submodule "oce"]
 	path = oce
 	url = https://github.com/tpaviot/oce
@@ -12,3 +11,6 @@
 [submodule "opencamlib"]
 	path = opencamlib
 	url = git://github.com/aewallin/opencamlib.git
+[submodule "oce"]
+	path = oce
+	url = git://github.com/tpaviot/oce.git
