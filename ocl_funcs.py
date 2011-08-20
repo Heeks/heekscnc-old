@@ -155,7 +155,8 @@ def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0,cutter_length 
         step_down *= units
         final_depth *= units
         tolerance *= units
-
+        cut_flag = True
+        first_move = True
     # read the stl file, we know it is an ascii file because HeeksCNC made it
     s = STLSurfFromFile(filepath)
 
@@ -190,28 +191,30 @@ def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0,cutter_length 
             if ((cutter_loop[0].z != tool_location.z) or (tool_location.distance(cutter_loop[0]) > (tool_diameter / 2.0))):
                 # Move above the starting point.
                 rapid(z = clearance / units)
-                rapid(x=cutter_loop[0].x / units, y=cutter_loop[0].y / units)
+                if (x0 <= cutter_loop[0].x / units <= x1) and (y0 <= cutter_loop[0].y / units <= y1):#boundary check
+                    rapid(x=cutter_loop[0].x / units, y=cutter_loop[0].y / units)
                 tool_location.x = cutter_loop[0].x / units
                 tool_location.y = cutter_loop[0].y / units
                 tool_location.z = clearance / units
-
                 # Feed down to the cutting depth
-                rapid(x=cutter_loop[0].x / units, y=cutter_loop[0].y / units)
-                tool_location.x = cutter_loop[0].x / units
-                tool_location.y = cutter_loop[0].y / units
-
+                if (x0 <= tool_location.x / units <= x1) and (y0 <= tool_location.y / units  <= y1):#boundary check
+                    feed(tool_location.x, tool_location.y ,z / units )
             # Cut around the solid at this level.
             for point in cutter_loop:
-                if x0 < point.x / units < x1 and y0 < point.y / units < y1:
-                    
-                    feed( x=point.x  / units, y=point.y / units, z=point.z / units )
-                    tool_location = point;
-                #if (point.x < (x0-step_over)) or (point.x > (x1+step_over)) or (point.y < (y0-step_over)) or (point.y > (y1+step_over)):
-                #if (point.x < (x0)) or (point.x > (x1)) or (point.y < (y0)) or (point.y > (y1)):
+                if (x0 <= point.x  <= x1) and (y0 <= point.y <= y1):#boundary check
+                    if cut_flag == False:
+                        rapid( x=point.x  / units, y=point.y / units  )
+                        cut_flag = True
+                    else:
+                        if first_move == True:
+                            rapid(x=point.x  / units, y=point.y / units)#rapid over to xy then feed down
+                            feed(z=point.z / units)
+                            first_move = False
+                        else:
+                            feed( x=point.x  / units, y=point.y / units, z=point.z / units )
+                            tool_location = point;
                 else: 
-
+                    cut_flag = False
             # And retract to the clearance height
                     rapid(z = clearance / units)
-                    tool_location.z = clearance / units
-                    rapid(x=cutter_loop[0].x / units, y=cutter_loop[0].y / units)
-            #working_diameter += step_over
+
