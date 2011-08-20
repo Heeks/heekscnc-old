@@ -202,14 +202,16 @@ def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0,cutter_length 
 
             # Cut around the solid at this level.
             for point in cutter_loop:
-                feed( x=point.x  / units, y=point.y / units, z=point.z / units )
-                tool_location = point;
+                if x0 < point.x / units < x1 and y0 < point.y / units < y1:
+                    
+                    feed( x=point.x  / units, y=point.y / units, z=point.z / units )
+                    tool_location = point;
                 #if (point.x < (x0-step_over)) or (point.x > (x1+step_over)) or (point.y < (y0-step_over)) or (point.y > (y1+step_over)):
                 #if (point.x < (x0)) or (point.x > (x1)) or (point.y < (y0)) or (point.y > (y1)):
-                    #room_to_expand = False
+                else: 
 
             # And retract to the clearance height
-            #rapid(z = clearance / units)
-            #tool_location.z = clearance / units
-
+                    rapid(z = clearance / units)
+                    tool_location.z = clearance / units
+                    rapid(x=cutter_loop[0].x / units, y=cutter_loop[0].y / units)
             #working_diameter += step_over
