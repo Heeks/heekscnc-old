@@ -136,14 +136,14 @@ def cutting_tool( diameter, corner_radius, length ):
    return(cutter)
 
 
-def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0, x0= -10.0, x1 = 10.0, y0 = -10.0, y1 = 10.0, mat_allowance = 0.0, clearance = 5.0, rapid_safety_space = 2.0, start_depth = 0.0, step_down = 2.0, final_depth = -10.0, units = 1.0, tolerance = 0.01 ):
+def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0,cutter_length = 0.0, x0= -10.0, x1 = 10.0, y0 = -10.0, y1 = 10.0, mat_allowance = 0.0, clearance = 5.0, rapid_safety_space = 2.0, start_depth = 0.0, step_down = 2.0, final_depth = -10.0, units = 1.0, tolerance = 0.01 ):
    mm = True
    if math.fabs(units)>0.000000001:
       # ocl works in mm, so convert all values to mm
       mm = False
       tool_diameter *= units
       corner_radius *= units
-      #step_over *= units
+      cutter_length *= units
       x0 *= units
       x1 *= units
       y0 *= units
@@ -175,7 +175,7 @@ def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0, x0= -10.0, x1
 
       room_to_expand = True
       # while (room_to_expand == True):
-      cutter = cutting_tool(working_diameter, corner_radius, 1000) # FIXME hard coded cutter length
+      cutter = cutting_tool(working_diameter, corner_radius, cutter_length)
 
       waterline = ocl.Waterline()
       waterline.setSTL(s)
