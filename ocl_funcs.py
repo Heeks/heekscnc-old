@@ -136,78 +136,85 @@ def cutting_tool( diameter, corner_radius, length ):
    return(cutter)
 
 
-def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0, step_over = 1.0, x0= -10.0, x1 = 10.0, y0 = -10.0, y1 = 10.0, mat_allowance = 0.0, clearance = 5.0, rapid_safety_space = 2.0, start_depth = 0.0, step_down = 2.0, final_depth = -10.0, units = 1.0, tolerance = 0.01 ):
-   mm = True
-   if math.fabs(units)>0.000000001:
-      # ocl works in mm, so convert all values to mm
-      mm = False
-      tool_diameter *= units
-      corner_radius *= units
-      step_over *= units
-      x0 *= units
-      x1 *= units
-      y0 *= units
-      y1 *= units
-      mat_allowance *= units
-      clearance *= units
-      rapid_safety_space *= units
-      start_depth *= units
-      step_down *= units
-      final_depth *= units
-      tolerance *= units
+def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0,cutter_length = 0.0, x0= -10.0, x1 = 10.0, y0 = -10.0, y1 = 10.0, mat_allowance = 0.0, clearance = 5.0, rapid_safety_space = 2.0, start_depth = 0.0, step_down = 2.0, final_depth = -10.0, units = 1.0, tolerance = 0.01 ):
+    mm = True
+    if math.fabs(units)>0.000000001:
+        # ocl works in mm, so convert all values to mm
+        mm = False
+        tool_diameter *= units
+        corner_radius *= units
+        cutter_length *= units
+        x0 *= units
+        x1 *= units
+        y0 *= units
+        y1 *= units
+        mat_allowance *= units
+        clearance *= units
+        rapid_safety_space *= units
+        start_depth *= units
+        step_down *= units
+        final_depth *= units
+        tolerance *= units
+        cut_flag = True
+        first_move = True
+    # read the stl file, we know it is an ascii file because HeeksCNC made it
+    s = STLSurfFromFile(filepath)
 
-   # read the stl file, we know it is an ascii file because HeeksCNC made it
-   s = STLSurfFromFile(filepath)
+    if final_depth > start_depth:
+        raise 'final_depth > start_depth'
+    height = start_depth - final_depth
+    zsteps = int( height / math.fabs(step_down) + 0.999999 )
+    zstep_down = height / zsteps
+    incremental_rapid_to = rapid_safety_space - start_depth
+    if incremental_rapid_to < 0: incremental_rapid_to = 0.1
 
-   if final_depth > start_depth:
-      raise 'final_depth > start_depth'
-   height = start_depth - final_depth
-   zsteps = int( height / math.fabs(step_down) + 0.999999 )
-   zstep_down = height / zsteps
-   incremental_rapid_to = rapid_safety_space - start_depth
-   if incremental_rapid_to < 0: incremental_rapid_to = 0.1
+    tool_location = ocl.Point(0.0, 0.0, 0.0)
 
-   tool_location = ocl.Point(0.0, 0.0, 0.0)
+    for k in range(0, zsteps):
+        z = start_depth - k * zstep_down
+        working_diameter = tool_diameter + mat_allowance
 
-   for k in range(0, zsteps):
-      z = start_depth - k * zstep_down
-      working_diameter = tool_diameter + mat_allowance
+        room_to_expand = True
+        # while (room_to_expand == True):
+        cutter = cutting_tool(working_diameter, corner_radius, cutter_length)
 
-      room_to_expand = True
-      # while (room_to_expand == True):
-      cutter = cutting_tool(working_diameter, corner_radius, 10)
+        waterline = ocl.Waterline()
+        #waterline = ocl.AdaptiveWaterline()
+        waterline.setSTL(s)
+        waterline.setSampling(tolerance)
+        waterline.setCutter(cutter)
+        waterline.setZ(z)
+        waterline.run()
+        cutter_loops = waterline.getLoops()
 
-      waterline = ocl.Waterline()
-      waterline.setSTL(s)
-      waterline.setSampling(tolerance)
-      waterline.setCutter(cutter)
-      waterline.setZ(z)
-      waterline.run()
-      cutter_loops = waterline.getLoops()
-
-      for cutter_loop in cutter_loops:
-         if ((cutter_loop[0].z != tool_location.z) or (tool_location.distance(cutter_loop[0]) > (tool_diameter / 2.0))):
-            # Move above the starting point.
-            rapid(z = clearance / units)
-            rapid(x=cutter_loop[0].x, y=cutter_loop[0].y)
-            tool_location.x = cutter_loop[0].x
-            tool_location.y = cutter_loop[0].y
-            tool_location.z = clearance / units
-
-            # Feed down to the cutting depth
-            rapid(x=cutter_loop[0].x, y=cutter_loop[0].y)
-            tool_location.x = cutter_loop[0].x
-            tool_location.y = cutter_loop[0].y
-
-         # Cut around the solid at this level.
-         for point in cutter_loop:
-            feed( x=point.x, y=point.y, z=point.z )
-            tool_location = point;
-            #if (point.x < (x0-step_over)) or (point.x > (x1+step_over)) or (point.y < (y0-step_over)) or (point.y > (y1+step_over)):
-            #   room_to_expand = False
-
+        for cutter_loop in cutter_loops:
+            if ((cutter_loop[0].z != tool_location.z) or (tool_location.distance(cutter_loop[0]) > (tool_diameter / 2.0))):
+                # Move above the starting point.
+                rapid(z = clearance / units)
+                if (x0 <= cutter_loop[0].x / units <= x1) and (y0 <= cutter_loop[0].y / units <= y1):#boundary check
+                    rapid(x=cutter_loop[0].x / units, y=cutter_loop[0].y / units)
+                tool_location.x = cutter_loop[0].x / units
+                tool_location.y = cutter_loop[0].y / units
+                tool_location.z = clearance / units
+                # Feed down to the cutting depth
+                if (x0 <= tool_location.x / units <= x1) and (y0 <= tool_location.y / units  <= y1):#boundary check
+                    feed(tool_location.x, tool_location.y ,z / units )
+            # Cut around the solid at this level.
+            for point in cutter_loop:
+                if (x0 <= point.x  <= x1) and (y0 <= point.y <= y1):#boundary check
+                    if cut_flag == False:
+                        rapid( x=point.x  / units, y=point.y / units  )
+                        cut_flag = True
+                    else:
+                        if first_move == True:
+                            rapid(x=point.x  / units, y=point.y / units)#rapid over to xy then feed down
+                            feed(z=point.z / units)
+                            first_move = False
+                        else:
+                            feed( x=point.x  / units, y=point.y / units, z=point.z / units )
+                            tool_location = point;
+                else: 
+                    cut_flag = False
             # And retract to the clearance height
-         rapid(z = clearance / units)
-         tool_location.z = clearance / units
+                    rapid(z = clearance / units)
 
-         #working_diameter += step_over
