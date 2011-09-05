@@ -24,7 +24,7 @@
 #include "MachineState.h"
 #include "Program.h"
 #include "CounterBore.h"
-
+#include <math.h>
 #include <sstream>
 #include <iomanip>
 #include <vector>
@@ -46,10 +46,10 @@ void CDrillingParams::set_initial_values( const double depth, const int tool_num
 	config.Read(_T("m_spindle_mode"), &m_spindle_mode, 0);
 	config.Read(_T("m_clearance_height"), &m_clearance_height, 25.4);		// One inch
 
-	if (depth > 0)
+	if (fabs(depth) > 0)
 	{
 		// We've found the depth we want used.  Assign it now.
-		m_depth = depth;
+		m_depth = fabs(depth); // if this isn't positive ie fabs(value) heeks will hang and eat up memory
 	} // End if - then
 
 	// The following is taken from the 'rule of thumb' document that Stanley Dornfeld put
@@ -117,7 +117,7 @@ static void on_set_dwell(double value, HeeksObj* object)
 
 static void on_set_depth(double value, HeeksObj* object)
 {
-	((CDrilling*)object)->m_params.m_depth = value;
+	((CDrilling*)object)->m_params.m_depth = fabs(value);
 	((CDrilling*)object)->m_params.write_values_to_config();
 }
 
@@ -696,7 +696,10 @@ void CDrilling::ReloadPointers()
 				} // End if - then
 			} // End if - then
 
-
+            /******************* I am commenting this out because it is confusing and potentially dangerous ***************************
+            // if you were to create a circle that has cross hairs that are just a little off from it's center
+            // you could potentially select the sketch and create a drilling operation that looks close- but is really off center-DF
+            //*****************************************************************************************
 			if (lhsPtr->GetType() == SketchType)
 			{
 				CBox bounding_box;
@@ -709,7 +712,9 @@ void CDrilling::ReloadPointers()
 					locations.push_back( CNCPoint( pos ) );
 				} // End if - then
 			} // End if - then
+            *********************************************************************************************************/
 
+            
 			if (lhsPtr->GetType() == ProfileType)
 			{
 				std::vector<CNCPoint> starting_points;
@@ -731,7 +736,7 @@ void CDrilling::ReloadPointers()
 					} // End if - then
 				} // End for
 			} // End if - then
-
+            
             if (lhsPtr->GetType() == DrillingType)
             {
                 // Ask the Drilling object what reference points it uses.
@@ -810,11 +815,11 @@ void CDrilling::ReloadPointers()
 	This method adjusts any parameters that don't make sense.  It should report a list
 	of changes in the list of strings.
  */
-std::list<wxString> CDrilling::DesignRulesAdjustment(const bool apply_changes)
+std::list<wxString> CDrilling::DesignRulesAdjustment(const bool apply_changes)  // None of this seems to work - DF 20110905
 {
 	std::list<wxString> changes;
 
-	// Make some special checks if we're using a chamfering bit.
+	// Make some special checks if we're using a chamfering bit. 
 	if (m_tool_number > 0)
 	{
 		CTool *pChamfer = (CTool *) CTool::Find( m_tool_number );
@@ -956,8 +961,8 @@ std::list<wxString> CDrilling::DesignRulesAdjustment(const bool apply_changes)
                             {
                                 m_params.m_depth = depthOp_depth;
                             } // End if - then
-                        } // End if - then
-					}
+                          } // End if - then
+					  }
 				}
 				break;
 
@@ -990,7 +995,12 @@ std::list<wxString> CDrilling::DesignRulesAdjustment(const bool apply_changes)
 
 	return(changes);
 
-} // End DesignRulesAdjustment() method
+} // End DesignRulesAdjustment() method 
+
+
+
+
+
 
 
 /**
@@ -1002,10 +1012,10 @@ std::list<wxString> CDrilling::DesignRulesAdjustment(const bool apply_changes)
     {
         case PointType:
         case CircleType:
-        case SketchType:
+        //case SketchType: //dangerous 
         case DrillingType:
-        case ProfileType:
-        case PocketType:
+        case ProfileType: // doesn't seem to be working at the moment
+        //case PocketType: //not used at this time
 		case FixtureType:
 		case ILineType:
             return(true);
