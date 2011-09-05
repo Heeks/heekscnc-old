@@ -643,7 +643,7 @@ void CDrilling::ReloadPointers()
 
 			continue;	// No need to intersect a point with anything.
 		} // End if - then
-
+        /*************************************** getting rid of intersections between infinite lines and other things -DF
         for (std::list<HeeksObj *>::iterator itRhs = rhs_children.begin(); itRhs != rhs_children.end(); itRhs++)
         {
             HeeksObj *rhsPtr = *itRhs;
@@ -677,7 +677,8 @@ void CDrilling::ReloadPointers()
 				} // End while
 			} // End if - then
 		} // End for
-
+        */
+        //************************************************************************************************
 		if (! l_bIntersectionsFound)
 		{
 			// This element didn't intersect anything else.  If it's a circle
