@@ -105,13 +105,13 @@ static void on_set_retract_mode(int value, HeeksObj* object)
 
 static void on_set_standoff(double value, HeeksObj* object)
 {
-	((CDrilling*)object)->m_params.m_standoff = value;
+	((CDrilling*)object)->m_params.m_standoff = fabs(value);
 	((CDrilling*)object)->m_params.write_values_to_config();
 }
 
 static void on_set_dwell(double value, HeeksObj* object)
 {
-	((CDrilling*)object)->m_params.m_dwell = value;
+	((CDrilling*)object)->m_params.m_dwell = fabs(value);
 	((CDrilling*)object)->m_params.write_values_to_config();
 }
 
@@ -123,7 +123,7 @@ static void on_set_depth(double value, HeeksObj* object)
 
 static void on_set_peck_depth(double value, HeeksObj* object)
 {
-	((CDrilling*)object)->m_params.m_peck_depth = value;
+	((CDrilling*)object)->m_params.m_peck_depth = fabs(value);
 	((CDrilling*)object)->m_params.write_values_to_config();
 }
 
