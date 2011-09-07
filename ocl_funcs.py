@@ -188,7 +188,7 @@ def waterline( filepath, tool_diameter = 3.0, corner_radius = 0.0,cutter_length 
         cutter_loops = waterline.getLoops()
 
         for cutter_loop in cutter_loops:
-            if ((cutter_loop[0].z != tool_location.z) or (tool_location.distance(cutter_loop[0]) > (tool_diameter / 2.0))):
+            if ((cutter_loop[0].z != tool_location.z) or ( (tool_location-cutter_loop[0]).xyNorm() > (tool_diameter / 2.0))):
                 # Move above the starting point.
                 rapid(z = clearance / units)
                 if (x0 <= cutter_loop[0].x / units <= x1) and (y0 <= cutter_loop[0].y / units <= y1):#boundary check
