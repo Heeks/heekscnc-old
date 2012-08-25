@@ -1,9 +1,0 @@
-[submodule "libarea"]
-	path = libarea
-	url = git://github.com/Heeks/libarea.git
-[submodule "opencamlib"]
-	path = opencamlib
-	url = git://github.com/aewallin/opencamlib.git
-[submodule "oce"]
-	path = oce
-	url = git://github.com/tpaviot/oce.git

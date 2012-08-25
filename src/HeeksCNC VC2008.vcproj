@@ -205,7 +205,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(CASROOT)\inc&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswud&quot;;&quot;$(WXWIN)\include\msvc&quot;;&quot;$(HEEKSCADPATH)&quot;;../kurve/geometry;../kurve/messages"
+				AdditionalIncludeDirectories="&quot;$(CASROOT)\inc&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)\lib\vc_dll\mswud&quot;;&quot;$(WXWIN)\include\msvc&quot;;&quot;$(HEEKSCADPATH)&quot;;../kurve/geometry;../kurve/messages;&quot;$(LIBAREA_PATH)&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;__WXMSW__;__WXDEBUG__;_WINDOWS;NOPCH;WNT;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;HEEKSCNC;OPEN_SOURCE_GEOMETRY;HEEKSPLUGIN;STABLE_OPS_ONLY"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -225,10 +225,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib comctl32.lib rpcrt4.lib TKVrml.lib TKStl.lib TKBRep.lib TKIGES.lib TKShHealing.lib TKSTEP.lib TKSTEP209.lib TKSTEPAttr.lib TKSTEPBase.lib TKXSBase.lib TKShapeSchema.lib FWOSPlugin.lib PTKernel.lib TKBool.lib TKCAF.lib TKCDF.lib TKDraw.lib TKernel.lib TKFeat.lib TKFillet.lib TKG2d.lib TKG3d.lib TKGeomAlgo.lib TKGeomBase.lib TKHLR.lib TKMath.lib TKOffset.lib TKPCAF.lib TKPrim.lib TKPShape.lib TKService.lib TKTopAlgo.lib TKV2d.lib TKV3d.lib TKMesh.lib TKAdvTools.lib TKCPPExt.lib TKBO.lib TKXDESTEP.lib TKXCAF.lib TKXCAFSchema.lib TKDCAF.lib TKLCAF.lib TKPLCAF.lib wxmsw28ud_core.lib wxmsw28ud_aui.lib wxmsw28ud_gl.lib wxbase28ud.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib comctl32.lib rpcrt4.lib TKVrml.lib TKStl.lib TKBRep.lib TKIGES.lib TKShHealing.lib TKSTEP.lib TKSTEP209.lib TKSTEPAttr.lib TKSTEPBase.lib TKXSBase.lib TKShapeSchema.lib FWOSPlugin.lib PTKernel.lib TKBool.lib TKCAF.lib TKCDF.lib TKDraw.lib TKernel.lib TKFeat.lib TKFillet.lib TKG2d.lib TKG3d.lib TKGeomAlgo.lib TKGeomBase.lib TKHLR.lib TKMath.lib TKOffset.lib TKPCAF.lib TKPrim.lib TKPShape.lib TKService.lib TKTopAlgo.lib TKV2d.lib TKV3d.lib TKMesh.lib TKAdvTools.lib TKBO.lib TKXDESTEP.lib TKXCAF.lib TKXCAFSchema.lib TKDCAF.lib TKLCAF.lib TKPLCAF.lib wxmsw28ud_core.lib wxmsw28ud_aui.lib wxmsw28ud_gl.lib wxbase28ud.lib"
 				OutputFile="..\HeeksCNC.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(CASROOT)\win32\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(CASROOT)\win32\vc8\lib&quot;"
 				GenerateDebugInformation="true"
 				SubSystem="2"
 				TargetMachine="1"
@@ -286,7 +286,7 @@
 				InlineFunctionExpansion="1"
 				EnableIntrinsicFunctions="false"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="&quot;$(CASROOT)\inc&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\include\msvc&quot;;&quot;$(HEEKSCADPATH)&quot;;../kurve/geometry;../kurve/messages"
+				AdditionalIncludeDirectories="&quot;$(CASROOT)\inc&quot;;&quot;$(WXWIN)\include&quot;;&quot;$(WXWIN)&quot;;&quot;$(WXWIN)\lib\vc_dll\mswu&quot;;&quot;$(WXWIN)\include\msvc&quot;;&quot;$(HEEKSCADPATH)&quot;;../kurve/geometry;../kurve/messages;&quot;$(LIBAREA_PATH)&quot;"
 				PreprocessorDefinitions="WIN32;__WXMSW__;_WINDOWS;NOPCH;WNT;_CRT_SECURE_NO_WARNINGS;WXUSINGDLL;_CRT_SECURE_NO_DEPRECATE;_SECURE_SCL=0;_SECURE_ATL =0;HEEKSCNC;OPEN_SOURCE_GEOMETRY;HEEKSPLUGIN;STABLE_OPS_ONLY"
 				StringPooling="false"
 				RuntimeLibrary="2"
@@ -311,10 +311,10 @@
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="opengl32.lib glu32.lib comctl32.lib rpcrt4.lib wxmsw28u_core.lib wxmsw28u_aui.lib wxmsw28u_gl.lib wxbase28u.lib TKVrml.lib TKStl.lib TKBRep.lib TKIGES.lib TKShHealing.lib TKSTEP.lib TKSTEP209.lib TKSTEPAttr.lib TKSTEPBase.lib TKXSBase.lib TKShapeSchema.lib FWOSPlugin.lib PTKernel.lib TKBool.lib TKCAF.lib TKCDF.lib TKDraw.lib TKernel.lib TKFeat.lib TKFillet.lib TKG2d.lib TKG3d.lib TKGeomAlgo.lib TKGeomBase.lib TKHLR.lib TKMath.lib TKOffset.lib TKPCAF.lib TKPrim.lib TKPShape.lib TKService.lib TKTopAlgo.lib TKV2d.lib TKV3d.lib TKMesh.lib TKAdvTools.lib TKCPPExt.lib TKBO.lib TKXDESTEP.lib TKXCAF.lib TKXCAFSchema.lib TKDCAF.lib TKLCAF.lib TKPLCAF.lib"
+				AdditionalDependencies="opengl32.lib glu32.lib comctl32.lib rpcrt4.lib wxmsw28u_core.lib wxmsw28u_aui.lib wxmsw28u_gl.lib wxbase28u.lib TKVrml.lib TKStl.lib TKBRep.lib TKIGES.lib TKShHealing.lib TKSTEP.lib TKSTEP209.lib TKSTEPAttr.lib TKSTEPBase.lib TKXSBase.lib TKShapeSchema.lib FWOSPlugin.lib PTKernel.lib TKBool.lib TKCAF.lib TKCDF.lib TKDraw.lib TKernel.lib TKFeat.lib TKFillet.lib TKG2d.lib TKG3d.lib TKGeomAlgo.lib TKGeomBase.lib TKHLR.lib TKMath.lib TKOffset.lib TKPCAF.lib TKPrim.lib TKPShape.lib TKService.lib TKTopAlgo.lib TKV2d.lib TKV3d.lib TKMesh.lib TKAdvTools.lib TKBO.lib TKXDESTEP.lib TKXCAF.lib TKXCAFSchema.lib TKDCAF.lib TKLCAF.lib TKPLCAF.lib"
 				OutputFile="$(OutDir)\$(ProjectName).dll"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(CASROOT)\win32\lib&quot;"
+				AdditionalLibraryDirectories="&quot;$(WXWIN)\lib\vc_dll&quot;;&quot;$(CASROOT)\win32\vc8\lib&quot;"
 				GenerateDebugInformation="false"
 				SubSystem="2"
 				OptimizeReferences="0"
@@ -351,14 +351,6 @@
 	</References>
 	<Files>
 		<File
-			RelativePath=".\Adaptive.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Adaptive.h"
-			>
-		</File>
-		<File
 			RelativePath=".\AttachOp.cpp"
 			>
 		</File>
@@ -367,23 +359,7 @@
 			>
 		</File>
 		<File
-			RelativePath=".\BOM.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\BOM.h"
-			>
-		</File>
-		<File
 			RelativePath="$(HEEKSCADPATH)\interface\Box.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Chamfer.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Chamfer.h"
 			>
 		</File>
 		<File
@@ -392,22 +368,6 @@
 		</File>
 		<File
 			RelativePath=".\CNCPoint.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Contour.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Contour.h"
-			>
-		</File>
-		<File
-			RelativePath=".\CounterBore.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\CounterBore.h"
 			>
 		</File>
 		<File
@@ -463,22 +423,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Fixture.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Fixture.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Fixtures.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Fixtures.h"
-			>
-		</File>
-		<File
 			RelativePath="$(HEEKSCADPATH)\src\Geom.cpp"
 			>
 		</File>
@@ -528,18 +472,6 @@
 		</File>
 		<File
 			RelativePath="$(HEEKSCADPATH)\interface\HeeksObj.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Inlay.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Inlay.h"
-			>
-		</File>
-		<File
-			RelativePath="$(HEEKSCADPATH)\HeeksCAD\interface\InputMode.h"
 			>
 		</File>
 		<File
@@ -791,14 +723,6 @@
 			>
 		</File>
 		<File
-			RelativePath=".\Raft.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Raft.h"
-			>
-		</File>
-		<File
 			RelativePath=".\RawMaterial.cpp"
 			>
 		</File>
@@ -820,6 +744,14 @@
 		</File>
 		<File
 			RelativePath=".\ScriptOp.h"
+			>
+		</File>
+		<File
+			RelativePath=".\Simulate.cpp"
+			>
+		</File>
+		<File
+			RelativePath=".\Simulate.h"
 			>
 		</File>
 		<File
@@ -984,30 +916,6 @@
 		</File>
 		<File
 			RelativePath=".\TrsfNCCode.h"
-			>
-		</File>
-		<File
-			RelativePath=".\TurnRough.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\TurnRough.h"
-			>
-		</File>
-		<File
-			RelativePath=".\Waterline.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\Waterline.h"
-			>
-		</File>
-		<File
-			RelativePath=".\ZigZag.cpp"
-			>
-		</File>
-		<File
-			RelativePath=".\ZigZag.h"
 			>
 		</File>
 	</Files>

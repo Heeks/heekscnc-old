@@ -34,6 +34,7 @@ public:
 		eExtrusion,
 		eTapTool,
 		eEngravingTool,
+		eDragKnife,
 		eUndefinedToolType
 	} eToolType;
 
@@ -50,18 +51,10 @@ public:
 		types_list.push_back( ToolTypeDescription_t( eSlotCutter, wxString(_("Slot Cutter")) ));
 		types_list.push_back( ToolTypeDescription_t( eBallEndMill, wxString(_("Ball End Mill")) ));
 		types_list.push_back( ToolTypeDescription_t( eChamfer, wxString(_("Chamfer")) ));
-#ifndef STABLE_OPS_ONLY
-		types_list.push_back( ToolTypeDescription_t( eTurningTool, wxString(_("Turning Tool")) ));
-#endif
 		types_list.push_back( ToolTypeDescription_t( eTouchProbe, wxString(_("Touch Probe")) ));
 		types_list.push_back( ToolTypeDescription_t( eToolLengthSwitch, wxString(_("Tool Length Switch")) ));
-#ifndef STABLE_OPS_ONLY
-		types_list.push_back( ToolTypeDescription_t( eExtrusion, wxString(_("Extrusion")) ));
-#endif
-#ifndef STABLE_OPS_ONLY
-		types_list.push_back( ToolTypeDescription_t( eTapTool, wxString(_("Tapping Tool")) ));
-#endif
 		types_list.push_back( ToolTypeDescription_t( eEngravingTool, wxString(_("Engraving Tool")) ));
+		types_list.push_back( ToolTypeDescription_t( eDragKnife, wxString(_("Drag Knife")) ));
 		return(types_list);
 	} // End GetToolTypesList() method
 
@@ -209,7 +202,10 @@ public:
 
 	// properties for tapping tools
 	int m_direction;    // 0.. right hand tapping, 1..left hand tapping
-        double m_pitch;     // in units/rev
+	double m_pitch;     // in units/rev
+
+	// properties for drag knife
+	double m_drag_knife_distance; // distance that the point is behind the rotation point
 
 	void set_initial_values();
 	void write_values_to_config();
@@ -239,16 +235,9 @@ public:
 	{
 		m_params.set_initial_values();
 		m_params.m_type = type;
-		if (title != NULL)
-		{
-			m_title = title;
-		} // End if - then
-		else
-		{
-			m_title = GenerateMeaningfulName();
-		} // End if - else
-
 		ResetParametersToReasonableValues();
+		if (title != NULL)m_title = title;
+		else m_title = GetMeaningfulName(heeksCAD->GetViewUnits());
 	} // End constructor
 
     CTool( const CTool & rhs );
@@ -287,9 +276,11 @@ public:
 
 	static CTool *Find( const int tool_number );
 	static int FindTool( const int tool_number );
+	static CToolParams::eToolType FindToolType( const int tool_number );
+	static bool IsMillingToolType( CToolParams::eToolType type );
 	static ToolNumber_t FindFirstByType( const CToolParams::eToolType type );
 	static std::vector< std::pair< int, wxString > > FindAllTools();
-	wxString GenerateMeaningfulName() const;
+	wxString GetMeaningfulName(double units) const;
 	wxString ResetTitle();
 	static wxString FractionalRepresentation( const double original_value, const int max_denominator = 64 );
 	static wxString GuageNumberRepresentation( const double size, const double units );
@@ -297,7 +288,7 @@ public:
 	TopoDS_Shape GetShape() const;
 	TopoDS_Face  GetSideProfile() const;
 
-	double CuttingRadius(const bool express_in_drawing_units = false, const double depth = -1) const;
+	double CuttingRadius(const bool express_in_program_units = false, const double depth = -1) const;
 	static CToolParams::eToolType CutterType( const int tool_number );
 	static CToolParams::eMaterial_t CutterMaterial( const int tool_number );
 
@@ -323,6 +314,6 @@ public:
 
     void SelectTapFromStandardSizes(const tap_sizes_t *tap_sizes);
     std::list<wxString> DesignRulesAdjustment(const bool apply_changes);
-
+	void OnChangeViewUnits(const double units);
 }; // End CTool class definition.
 

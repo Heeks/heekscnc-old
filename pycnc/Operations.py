@@ -24,17 +24,17 @@ def AddOperationMenuItems(CAM_menu):
 def on_profile_operation():
     op = Profile()
     op.ReadDefaultValues()
-    op.sketches = HeeksCNC.heekscnc.cad.get_selected_sketches()
+    op.sketches = heekscnc.cad.get_selected_sketches()
     if op.Edit():
-        HeeksCNC.heekscnc.program.operations.Add(op)
-        HeeksCNC.heekscnc.tree.Add(op)
-        HeeksCNC.heekscnc.tree.Refresh()
+        heekscnc.program.operations.Add(op)
+        heekscnc.tree.Add(op)
+        heekscnc.tree.Refresh()
 
 def on_pocket_operation():
     op = Pocket()
     op.ReadDefaultValues()
-    op.sketches = HeeksCNC.heekscnc.cad.get_selected_sketches()
+    op.sketches = heekscnc.cad.get_selected_sketches()
     if op.Edit():
-        HeeksCNC.heekscnc.program.operations.Add(op)
-        HeeksCNC.heekscnc.tree.Add(op)
-        HeeksCNC.heekscnc.tree.Refresh()
+        heekscnc.program.operations.Add(op)
+        heekscnc.tree.Add(op)
+        heekscnc.tree.Refresh()

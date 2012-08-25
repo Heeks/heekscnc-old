@@ -39,6 +39,7 @@ CPocketParams::CPocketParams()
 	m_zig_angle = 0.0;
 	m_zig_unidirectional = false;
 	m_entry_move = ePlunge;
+	m_cut_mode = eConventional;
 }
 
 void CPocketParams::set_initial_values(const CTool::ToolNumber_t tool_number)
@@ -101,10 +102,26 @@ static void on_set_zig_uni(bool value, HeeksObj* object)
 	((CPocket*)object)->WriteDefaultValues();
 }
 
+static void on_set_cut_mode(int value, HeeksObj* object)
+{
+	((CPocket*)object)->m_pocket_params.m_cut_mode = (CPocketParams::eCutMode)value;
+	((CPocket*)object)->WriteDefaultValues();
+}
+
 void CPocketParams::GetProperties(CPocket* parent, std::list<Property *> *list)
 {
+	CToolParams::eToolType tool_type = CTool::FindToolType(parent->m_tool_number);
+
 	list->push_back(new PropertyLength(_("step over"), m_step_over, parent, on_set_step_over));
 	list->push_back(new PropertyLength(_("material allowance"), m_material_allowance, parent, on_set_material_allowance));
+
+	if(CTool::IsMillingToolType(tool_type)){
+		std::list< wxString > choices;
+		choices.push_back(_("Conventional"));
+		choices.push_back(_("Climb"));
+		list->push_back(new PropertyChoice(_("cut mode"), choices, m_cut_mode, parent, on_set_cut_mode));
+	}
+
 	{
 		std::list< wxString > choices;
 		choices.push_back(_("Boundary"));
@@ -133,6 +150,7 @@ void CPocketParams::WriteXMLAttributes(TiXmlNode *root)
 	element = heeksCAD->NewXMLElement( "params" );
 	heeksCAD->LinkXMLEndChild( root,  element );
 	element->SetDoubleAttribute( "step", m_step_over);
+	element->SetAttribute( "cut_mode", m_cut_mode);
 	element->SetDoubleAttribute( "mat", m_material_allowance);
 	element->SetAttribute( "from_center", m_starting_place);
 	element->SetAttribute( "keep_tool_down", m_keep_tool_down_if_poss ? 1:0);
@@ -145,6 +163,8 @@ void CPocketParams::WriteXMLAttributes(TiXmlNode *root)
 void CPocketParams::ReadFromXMLElement(TiXmlElement* pElem)
 {
 	pElem->Attribute("step", &m_step_over);
+	int int_for_enum;
+	if(pElem->Attribute("cut_mode", &int_for_enum))m_cut_mode = (eCutMode)int_for_enum;
 	pElem->Attribute("mat", &m_material_allowance);
 	pElem->Attribute("from_center", &m_starting_place);
 	int int_for_bool = false;
@@ -238,11 +258,7 @@ static wxString WriteSketchDefn(HeeksObj* sketch, CMachineState *pMachineState)
 			if(type == LineType || type == ArcType)
 			{
 				span_object->GetStartPoint(s);
-#ifdef STABLE_OPS_ONLY
 				CNCPoint start(s);
-#else
-				CNCPoint start(pMachineState->Fixture().Adjustment(s));
-#endif
 
 				if(started && (fabs(s[0] - prev_e[0]) > 0.0001 || fabs(s[1] - prev_e[1]) > 0.0001))
 				{
@@ -257,11 +273,7 @@ static wxString WriteSketchDefn(HeeksObj* sketch, CMachineState *pMachineState)
 					started = true;
 				}
 				span_object->GetEndPoint(e);
-#ifdef STABLE_OPS_ONLY
 				CNCPoint end(e);
-#else
-				CNCPoint end(pMachineState->Fixture().Adjustment(e));
-#endif
 
 				if(type == LineType)
 				{
@@ -270,11 +282,7 @@ static wxString WriteSketchDefn(HeeksObj* sketch, CMachineState *pMachineState)
 				else if(type == ArcType)
 				{
 					span_object->GetCentrePoint(c);
-#ifdef STABLE_OPS_ONLY
 					CNCPoint centre(c);
-#else
-					CNCPoint centre(pMachineState->Fixture().Adjustment(c));
-#endif
 
 					double pos[3];
 					heeksCAD->GetArcAxis(span_object, pos);
@@ -307,20 +315,12 @@ static wxString WriteSketchDefn(HeeksObj* sketch, CMachineState *pMachineState)
 					points.push_back( std::make_pair(-1, gp_Pnt( c[0] - radius, c[1], c[2] )) ); // west
 					points.push_back( std::make_pair(-1, gp_Pnt( c[0], c[1] + radius, c[2] )) ); // north
 
-#ifdef STABLE_OPS_ONLY
 					CNCPoint centre(c);
-#else
-					CNCPoint centre(pMachineState->Fixture().Adjustment(c));
-#endif
 
 					gcode << _T("c = area.Curve()\n");
 					for (std::list< std::pair<int, gp_Pnt > >::iterator l_itPoint = points.begin(); l_itPoint != points.end(); l_itPoint++)
 					{
-#ifdef STABLE_OPS_ONLY
 						CNCPoint pnt( l_itPoint->second );
-#else
-						CNCPoint pnt = pMachineState->Fixture().Adjustment( l_itPoint->second );
-#endif
 
 						gcode << _T("c.append(area.Vertex(") << l_itPoint->first << _T(", area.Point(");
 						gcode << pnt.X(true) << (_T(", ")) << pnt.Y(true);
@@ -357,6 +357,33 @@ const wxBitmap &CPocket::GetIcon()
 	return *icon;
 }
 
+void CPocket::WritePocketPython(Python &python)
+{
+	// start - assume we are at a suitable clearance height
+
+	// make a parameter of area_funcs.pocket() eventually
+	// 0..plunge, 1..ramp, 2..helical
+	python << _T("entry_style = ") <<  m_pocket_params.m_entry_move << _T("\n");
+
+	// Pocket the area
+	python << _T("area_funcs.pocket(a, tool_diameter/2, ");
+	python << m_pocket_params.m_material_allowance / theApp.m_program->m_units;
+	python << _T(", rapid_safety_space, start_depth, final_depth, ");
+	python << m_pocket_params.m_step_over / theApp.m_program->m_units;
+	python << _T(", step_down, clearance, ");
+	python << m_pocket_params.m_starting_place;
+	python << (m_pocket_params.m_keep_tool_down_if_poss ? _T(", True") : _T(", False"));
+	python << (m_pocket_params.m_use_zig_zag ? _T(", True") : _T(", False"));
+	python << _T(", ") << m_pocket_params.m_zig_angle;
+	python << _T(",") << (m_pocket_params.m_zig_unidirectional ? _T("True") : _T("False"));
+	python << _T(", None"); // start point
+	python << _T(",") << ((m_pocket_params.m_cut_mode == CPocketParams::eClimb) ? _T("'climb'") : _T("'conventional'"));
+	python << _T(")\n");
+
+	// rapid back up to clearance plane
+	python << _T("rapid(z = clearance)\n");
+}
+
 Python CPocket::AppendTextToProgram(CMachineState *pMachineState)
 {
 	Python python;
@@ -375,21 +402,37 @@ Python CPocket::AppendTextToProgram(CMachineState *pMachineState)
 
 	python << CDepthOp::AppendTextToProgram(pMachineState);
 
-	python << _T("a = area.Area()\n");
-	python << _T("entry_moves = []\n");
-
-#ifdef OP_SKETCHES_AS_CHILDREN
-    for (HeeksObj *object = GetFirstChild(); object != NULL; object = GetNextChild())
-    {
-#else
+	// do areas and circles first, separately
+	int num_sketches = 0;
 	for (std::list<int>::iterator It = m_sketches.begin(); It != m_sketches.end(); It++)
     {
 		HeeksObj* object = heeksCAD->GetIDObject(SketchType, *It);
-#endif
-		if (object->GetType() != SketchType)
+
+		switch(object->GetType())
 		{
-			continue;	// Skip private fixture objects.
+		case CircleType:
+		case AreaType:
+			{
+				heeksCAD->ObjectAreaString(object, python);
+				WritePocketPython(python);
+			}
+			break;
+		case SketchType:
+			num_sketches++;
+			break;
 		}
+	}
+
+	if(num_sketches > 0)
+	{
+	python << _T("a = area.Area()\n");
+	python << _T("entry_moves = []\n");
+
+	for (std::list<int>::iterator It = m_sketches.begin(); It != m_sketches.end(); It++)
+    {
+		HeeksObj* object = heeksCAD->GetIDObject(SketchType, *It);
+
+		if(object->GetType() != SketchType)continue;
 
 		if(object == NULL) {
 			wxMessageBox(wxString::Format(_("Pocket operation - Sketch doesn't exist")));
@@ -397,35 +440,7 @@ Python CPocket::AppendTextToProgram(CMachineState *pMachineState)
 		}
 		int type = object->GetType();
 		double c[3] = {0, 0, 0};
-		double radius;
 
-		switch (type) {
-
-		case CircleType:
-			if (m_pocket_params.m_entry_move == CPocketParams::eHelical) {
-				GetCentrePoint(c);
-				radius = heeksCAD->CircleGetRadius(object);
-				python << _T("# entry_moves.append(circle(") << c[0]/theApp.m_program->m_units << _T(", ") << c[1]/theApp.m_program->m_units << _T(", ")<< c[2]/theApp.m_program->m_units << _T(", ") << radius/theApp.m_program->m_units ;
-				python << _T("))\n") ;
-			} else {
-				wxLogMessage(_T("circle found in pocket operation (id=%d) but entry move is not helical, id=%d"), GetID(),object->GetID());
-			}
-			continue;
-
-		case PointType:
-			if (m_pocket_params.m_entry_move == CPocketParams::eHelical) {
-				memset( c, 0, sizeof(c) );
-				heeksCAD->VertexGetPoint( object, c);
-				python << _T("# entry_moves.append(point(") << c[0]/theApp.m_program->m_units << _T(", ") << c[1]/theApp.m_program->m_units << _T("))\n");
-
-			} else {
-				wxLogMessage(_T("point found in pocket operation (id=%d) but entry move is not helical, id=%d"), GetID(), object->GetID());
-			}
-			continue;
-
-		default:
-			break;
-		}
 		if (object->GetNumChildren() == 0){
 			wxMessageBox(wxString::Format(_("Pocket operation - Sketch %d has no children"), object->GetID()));
 			continue;
@@ -477,32 +492,14 @@ Python CPocket::AppendTextToProgram(CMachineState *pMachineState)
 		{
 			delete re_ordered_sketch;
 		}
+
 	} // End for
 
 	// reorder the area, the outside curves must be made anti-clockwise and the insides clockwise
 	python << _T("a.Reorder()\n");
 
-	// start - assume we are at a suitable clearance height
-
-	// make a parameter of area_funcs.pocket() eventually
-	// 0..plunge, 1..ramp, 2..helical
-	python << _T("entry_style = ") <<  m_pocket_params.m_entry_move << _T("\n");
-
-	// Pocket the area
-	python << _T("area_funcs.pocket(a, tool_diameter/2, ");
-	python << m_pocket_params.m_material_allowance / theApp.m_program->m_units;
-	python << _T(", rapid_safety_space, start_depth, final_depth, ");
-	python << m_pocket_params.m_step_over / theApp.m_program->m_units;
-	python << _T(", step_down, clearance, ");
-	python << m_pocket_params.m_starting_place;
-	python << (m_pocket_params.m_keep_tool_down_if_poss ? _T(", True") : _T(", False"));
-	python << (m_pocket_params.m_use_zig_zag ? _T(", True") : _T(", False"));
-	python << _T(", ") << m_pocket_params.m_zig_angle;
-	python << _T(",") << (m_pocket_params.m_zig_unidirectional ? _T("True") : _T("False"));
-	python << _T(")\n");
-
-	// rapid back up to clearance plane
-	python << _T("rapid(z = clearance)\n");
+	WritePocketPython(python);
+	}
 
 	return(python);
 
@@ -515,6 +512,7 @@ void CPocket::WriteDefaultValues()
 
 	CNCConfig config(CPocketParams::ConfigScope());
 	config.Write(_T("StepOver"), m_pocket_params.m_step_over);
+	config.Write(_T("CutMode"), m_pocket_params.m_cut_mode);
 	config.Write(_T("MaterialAllowance"), m_pocket_params.m_material_allowance);
 	config.Write(_T("FromCenter"), m_pocket_params.m_starting_place);
 	config.Write(_T("KeepToolDown"), m_pocket_params.m_keep_tool_down_if_poss);
@@ -530,6 +528,9 @@ void CPocket::ReadDefaultValues()
 
 	CNCConfig config(CPocketParams::ConfigScope());
 	config.Read(_T("StepOver"), &m_pocket_params.m_step_over, 1.0);
+	int int_mode = m_pocket_params.m_cut_mode;
+	config.Read(_T("CutMode"), &int_mode, CPocketParams::eConventional);
+	m_pocket_params.m_cut_mode = (CPocketParams::eCutMode)int_mode;
 	config.Read(_T("MaterialAllowance"), &m_pocket_params.m_material_allowance, 0.2);
 	config.Read(_T("FromCenter"), &m_pocket_params.m_starting_place, 1);
 	config.Read(_T("KeepToolDown"), &m_pocket_params.m_keep_tool_down_if_poss, true);
@@ -619,7 +620,7 @@ HeeksObj* CPocket::ReadFromXMLElement(TiXmlElement* element)
 
 	std::list<TiXmlElement *> elements_to_remove;
 
-	// read profile parameters
+	// read parameters
 	TiXmlElement* params = heeksCAD->FirstNamedXMLChildElement(element, "params");
 	if(params)
 	{
