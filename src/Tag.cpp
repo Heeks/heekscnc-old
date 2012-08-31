@@ -77,7 +77,7 @@ void CTag::GetProperties(std::list<Property *> *list)
 
 static CTag* object_for_tools = NULL;
 
-class PickPos: public Tool{
+class PickPos2: public Tool{
 public:
 	// Tool's virtual functions
 	const wxChar* GetTitle(){return _("Pick position");}
@@ -94,12 +94,12 @@ public:
 	wxString BitmapPath(){ return _T("tagpos");}
 };
 
-static PickPos pick_pos;
+static PickPos2 pick_pos2;
 
 void CTag::GetTools(std::list<Tool*>* t_list, const wxPoint* p)
 {
 	object_for_tools = this;
-	t_list->push_back(&pick_pos);
+	t_list->push_back(&pick_pos2);
 
 }
 
@@ -158,5 +158,5 @@ bool CTag::operator==( const CTag & rhs ) const
 void CTag::PickPosition(CTag* tag)
 {
 	object_for_tools = tag;
-	pick_pos.Run();
+	pick_pos2.Run();
 }

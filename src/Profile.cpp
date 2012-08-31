@@ -1029,7 +1029,8 @@ public:
 	{
 		heeksCAD->CreateUndoPoint();
 		CTag* new_object = new CTag();
-		object_for_tools->Tags()->Add(new_object, NULL);
+	       	CTags* temp = object_for_tools->Tags();
+		temp->Add(new_object, NULL);
 		heeksCAD->Changed();
 		heeksCAD->ClearMarkedList();
 		heeksCAD->Mark(new_object);
