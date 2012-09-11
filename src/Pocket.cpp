@@ -404,10 +404,15 @@ Python CPocket::AppendTextToProgram(CMachineState *pMachineState)
 
 	// do areas and circles first, separately
 	int num_sketches = 0;
+#ifdef OP_SKETCHES_AS_CHILDREN
+	for(std::list<HeeksObj*>::iterator It = m_objects.begin(); It != m_objects.end(); It++)
+	{
+        HeeksObj* object = *It;
+#else
 	for (std::list<int>::iterator It = m_sketches.begin(); It != m_sketches.end(); It++)
-    {
+    	{
 		HeeksObj* object = heeksCAD->GetIDObject(SketchType, *It);
-
+#endif
 		switch(object->GetType())
 		{
 		case CircleType:
@@ -428,10 +433,16 @@ Python CPocket::AppendTextToProgram(CMachineState *pMachineState)
 	python << _T("a = area.Area()\n");
 	python << _T("entry_moves = []\n");
 
-	for (std::list<int>::iterator It = m_sketches.begin(); It != m_sketches.end(); It++)
-    {
-		HeeksObj* object = heeksCAD->GetIDObject(SketchType, *It);
+#ifdef OP_SKETCHES_AS_CHILDREN
+	for(std::list<HeeksObj*>::iterator It = m_objects.begin(); It != m_objects.end(); It++)
+	{
+	  HeeksObj* object = *It;
+#else
 
+	for (std::list<int>::iterator It = m_sketches.begin(); It != m_sketches.end(); It++)
+    	{
+		HeeksObj* object = heeksCAD->GetIDObject(SketchType, *It);
+#endif
 		if(object->GetType() != SketchType)continue;
 
 		if(object == NULL) {
