@@ -28,6 +28,9 @@
 #include "interface/strconv.h"
 #include "MachineState.h"
 #include "AttachOp.h"
+#include "ZigZag.h"		
+#include "Waterline.h"
+#include "CounterBore.h"
 
 #include <wx/stdpaths.h>
 #include <wx/filename.h>
@@ -579,6 +582,8 @@ Python CProgram::RewritePythonProgram()
 	Python python;
 
 	theApp.m_program_canvas->m_textCtrl->Clear();
+	CZigZag::number_for_stl_file = 1;		
+	CWaterline::number_for_stl_file = 1;
 	CAttachOp::number_for_stl_file = 1;
 
 	// call any OnRewritePython functions from other plugins

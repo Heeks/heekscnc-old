@@ -47,6 +47,9 @@
 #include "Simulate.h"
 
 #include <sstream>
+#include "ZigZag.h"
+#include "Waterline.h"
+#include "CounterBore.h"
 
 CHeeksCADInterface* heeksCAD = NULL;
 
@@ -246,6 +249,136 @@ static void NewPocketOpMenuCallback(wxCommandEvent &event)
 		else
 			delete new_object;
 	}
+}
+static void NewZigZagOpMenuCallback(wxCommandEvent &event)		
+{		
+	// check for at least one solid selected		
+	std::list<int> solids;		
+	
+	const std::list<HeeksObj*>& list = heeksCAD->GetMarkedList();		
+	for(std::list<HeeksObj*>::const_iterator It = list.begin(); It != list.end(); It++)		
+	{		
+		HeeksObj* object = *It;		
+		if(object->GetType() == SolidType || object->GetType() == StlSolidType)solids.push_back(object->m_id);		
+	}		
+		
+	// if no selected solids,		
+	if(solids.size() == 0)		
+	{		
+		// use all the solids in the drawing		
+		for(HeeksObj* object = heeksCAD->GetFirstObject();object; object = heeksCAD->GetNextObject())		
+		{		
+			if(object->GetType() == SolidType || object->GetType() == StlSolidType)solids.push_back(object->m_id);		
+		}		
+	}		
+		
+	if(solids.size() == 0)		
+	{		
+		wxMessageBox(_("There are no solids!"));		
+		return;		
+	}		
+		
+	heeksCAD->CreateUndoPoint();		
+	CZigZag *new_object = new CZigZag(solids);		
+	theApp.m_program->Operations()->Add(new_object, NULL);		
+	heeksCAD->ClearMarkedList();		
+	heeksCAD->Mark(new_object);		
+	heeksCAD->Changed();		
+}		
+			
+static void NewWaterlineOpMenuCallback(wxCommandEvent &event)		
+{		
+	// check for at least one solid selected		
+	std::list<int> solids;		
+		
+	const std::list<HeeksObj*>& list = heeksCAD->GetMarkedList();		
+	for(std::list<HeeksObj*>::const_iterator It = list.begin(); It != list.end(); It++)		
+	{		
+		HeeksObj* object = *It;		
+		if(object->GetType() == SolidType || object->GetType() == StlSolidType)solids.push_back(object->m_id);		
+	}		
+		
+	// if no selected solids,		
+	if(solids.size() == 0)		
+	{		
+		// use all the solids in the drawing		
+		for(HeeksObj* object = heeksCAD->GetFirstObject();object; object = heeksCAD->GetNextObject())		
+		{		
+			if(object->GetType() == SolidType || object->GetType() == StlSolidType)solids.push_back(object->m_id);		
+		}		
+	}		
+		
+	if(solids.size() == 0)		
+	{		
+		wxMessageBox(_("There are no solids!"));		
+		return;		
+	}		
+		
+	heeksCAD->CreateUndoPoint();		
+	CWaterline *new_object = new CWaterline(solids);		
+	theApp.m_program->Operations()->Add(new_object, NULL);		
+	heeksCAD->ClearMarkedList();		
+	heeksCAD->Mark(new_object);		
+	heeksCAD->Changed();		
+}
+
+static void NewCounterBoreOpMenuCallback(wxCommandEvent &event)
+{
+	std::vector<CNCPoint> intersections;
+	CCounterBore::Symbols_t symbols;
+	CCounterBore::Symbols_t Tools;
+	int tool_number = 0;
+
+	const std::list<HeeksObj*>& list = heeksCAD->GetMarkedList();
+	for(std::list<HeeksObj*>::const_iterator It = list.begin(); It != list.end(); It++)
+	{
+		HeeksObj* object = *It;
+		if (object->GetType() == ToolType)
+		{
+			Tools.push_back( CCounterBore::Symbol_t( object->GetType(), object->m_id ) );
+			tool_number = ((CTool *)object)->m_tool_number;
+		} // End if - then
+		else
+		{
+		    if (CCounterBore::ValidType( object->GetType() ))
+		    {
+                symbols.push_back( CCounterBore::Symbol_t( object->GetType(), object->m_id ) );
+		    }
+		} // End if - else
+	} // End for
+
+	CCounterBore::Symbols_t ToolsThatMatchCircles;
+	CCounterBore counterbore( symbols, -1 );
+	intersections = CDrilling::FindAllLocations( &counterbore );
+
+	if ((Tools.size() == 0) && (ToolsThatMatchCircles.size() > 0))
+	{
+		// The operator didn't point to a tool object and one of the circles that they
+		// did point to happenned to match the diameter of an existing tool.  Use that
+		// one as our default.  The operator can always overwrite it later on.
+
+		std::copy( ToolsThatMatchCircles.begin(), ToolsThatMatchCircles.end(),
+				std::inserter( Tools, Tools.begin() ));
+	} // End if - then
+
+	if (intersections.size() == 0)
+	{
+		wxMessageBox(_("You must select some points, circles or other intersecting elements first!"));
+		return;
+	}
+
+	if(Tools.size() > 1)
+	{
+		wxMessageBox(_("You may only select a single tool for each drilling operation.!"));
+		return;
+	}
+
+	heeksCAD->CreateUndoPoint();
+	CCounterBore *new_object = new CCounterBore( symbols, tool_number );
+	theApp.m_program->Operations()->Add(new_object, NULL);
+	heeksCAD->ClearMarkedList();
+	heeksCAD->Mark(new_object);
+	heeksCAD->Changed();
 }
 
 static void NewDrillingOpMenuCallback(wxCommandEvent &event)
@@ -955,11 +1088,14 @@ static void AddToolBars()
 		heeksCAD->AddFlyoutButton(_("Pocket"), ToolImage(_T("pocket")), _("New Pocket Operation..."), NewPocketOpMenuCallback);
 		heeksCAD->AddFlyoutButton(_("Drill"), ToolImage(_T("drilling")), _("New Drill Cycle Operation..."), NewDrillingOpMenuCallback);
 		heeksCAD->AddFlyoutButton(_("Tap"), ToolImage(_T("optap")), _("New Tapping Operation..."), NewTappingOpMenuCallback);
+		heeksCAD->AddFlyoutButton(_("CounterBore"), ToolImage(_T("counterbore")), _("New CounterBore Cycle Operation..."), NewCounterBoreOpMenuCallback);
 		heeksCAD->EndToolBarFlyout((wxToolBar*)(theApp.m_machiningBar));
 
 		heeksCAD->StartToolBarFlyout(_("3D Milling operations"));
 		heeksCAD->AddFlyoutButton(_("Attach"), ToolImage(_T("attach")), _("New Attach Operation..."), NewAttachOpMenuCallback);
 		heeksCAD->AddFlyoutButton(_("Unattach"), ToolImage(_T("unattach")), _("New Unattach Operation..."), NewUnattachOpMenuCallback);
+		heeksCAD->AddFlyoutButton(_("ZigZag"), ToolImage(_T("zigzag")), _("New ZigZag Operation..."), NewZigZagOpMenuCallback);		
+		heeksCAD->AddFlyoutButton(_("Waterline"), ToolImage(_T("waterline")), _("New Waterline Operation..."), NewWaterlineOpMenuCallback);		
 		heeksCAD->EndToolBarFlyout((wxToolBar*)(theApp.m_machiningBar));
 
 		heeksCAD->StartToolBarFlyout(_("Other operations"));
@@ -1085,11 +1221,14 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Profile Operation..."), ToolImage(_T("opprofile")), NewProfileOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Pocket Operation..."), ToolImage(_T("pocket")), NewPocketOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Drilling Operation..."), ToolImage(_T("drilling")), NewDrillingOpMenuCallback);
+	heeksCAD->AddMenuItem(menuMillingOperations, _("CounterBore Operation..."), ToolImage(_T("counterbore")), NewCounterBoreOpMenuCallback);
 	heeksCAD->AddMenuItem(menuMillingOperations, _("Tapping Operation..."), ToolImage(_T("optap")), NewTappingOpMenuCallback);
 
 	wxMenu *menu3dMillingOperations = new wxMenu;
 	heeksCAD->AddMenuItem(menu3dMillingOperations, _("Attach Operation..."), ToolImage(_T("attach")), NewAttachOpMenuCallback);
 	heeksCAD->AddMenuItem(menu3dMillingOperations, _("Unattach Operation..."), ToolImage(_T("unattach")), NewUnattachOpMenuCallback);
+	heeksCAD->AddMenuItem(menu3dMillingOperations, _("ZigZag Operation..."), ToolImage(_T("zigzag")), NewZigZagOpMenuCallback);		
+	heeksCAD->AddMenuItem(menu3dMillingOperations, _("Waterline Operation..."), ToolImage(_T("waterline")), NewWaterlineOpMenuCallback);
 
 	// Additive Operations menu
 	wxMenu *menuOperations = new wxMenu;
@@ -1189,6 +1328,9 @@ void CHeeksCNCApp::OnStartUp(CHeeksCADInterface* h, const wxString& dll_path)
 	heeksCAD->RegisterReadXMLfunction("Tool", CTool::ReadFromXMLElement);
 	heeksCAD->RegisterReadXMLfunction("CuttingTool", CTool::ReadFromXMLElement);
 	heeksCAD->RegisterReadXMLfunction("Tapping", CTapping::ReadFromXMLElement);
+	heeksCAD->RegisterReadXMLfunction("ZigZag", CZigZag::ReadFromXMLElement);		
+	heeksCAD->RegisterReadXMLfunction("Waterline", CWaterline::ReadFromXMLElement);
+	heeksCAD->RegisterReadXMLfunction("CounterBore", CCounterBore::ReadFromXMLElement);
 
 	heeksCAD->RegisterReadXMLfunction("SpeedReferences", CSpeedReferences::ReadFromXMLElement);
 	heeksCAD->RegisterReadXMLfunction("SpeedReference", CSpeedReference::ReadFromXMLElement);

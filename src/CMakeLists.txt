@@ -52,6 +52,9 @@ set( heekscnc_HDRS
     DepthOp.h
     Drilling.h
     Excellon.h
+    CounterBore.h
+    Waterline.h
+    ZigZag.h
     ${HEEKSCADPATH}/interface/HDialogs.h
     ${HEEKSCADPATH}/interface/HeeksCADInterface.h
     HeeksCNC.h
@@ -118,6 +121,9 @@ set( heekscnc_SRCS
     DepthOp.cpp
     Drilling.cpp
     Excellon.cpp
+    Waterline.cpp
+    ZigZag.cpp
+    CounterBore.cpp
     ${HEEKSCADPATH}/src/Geom.cpp
     ${HEEKSCADPATH}/interface/HDialogs.cpp
     HeeksCNC.cpp
