@@ -57,7 +57,7 @@ set(CPACK_GENERATOR "DEB")
 set(CPACK_DEBIAN_PACKAGE_MAINTAINER "HeeksCAD Developers <heekscad-devel@googlegroups.com>")
 set(CPACK_PACKAGE_NAME "heekscnc")
 set(CPACK_PACKAGE_VERSION_MAJOR 0)
-set(CPACK_PACKAGE_VERSION_MINOR 18)
+set(CPACK_PACKAGE_VERSION_MINOR 22)
 set(CPACK_PACKAGE_VERSION_PATCH 0)
 set(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}_beta-${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}_${PKG_ARCH}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HeeksCNC, CNC machining add-in for HeeksCAD
@@ -66,7 +66,7 @@ set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "HeeksCNC, CNC machining add-in for HeeksC
 set(CPACK_DEBIAN_PACKAGE_SECTION "science")
 set(CPACK_DEBIAN_PACKAGE_VERSION "")
 
-set(CPACK_DEBIAN_PACKAGE_DEPENDS "python-wxgtk2.8, libgtkglext1 (>= 1.2), python (>= 2.5), libboost-python1.40.0 | libboost-python1.42.0, python" )
+set(CPACK_DEBIAN_PACKAGE_DEPENDS "python-wxgtk2.8, libgtkglext1 (>= 1.2), python (>= 2.5), libboost-python1.40.0 | libboost-python1.42.0 | libboost-python1.46.1 | libboost-python1.48.0" )
 set(CPACK_DEBIAN_PACKAGE_RECOMMENDS "heekscad (>= 0.15.1), libopencascade-ocaf-6.3.0")
 
 
