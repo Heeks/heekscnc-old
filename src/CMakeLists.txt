@@ -121,9 +121,9 @@ set( heekscnc_SRCS
     DepthOp.cpp
     Drilling.cpp
     Excellon.cpp
-    Waterline.cpp
-    ZigZag.cpp
     CounterBore.cpp
+    ZigZag.cpp
+    Waterline.cpp
     ${HEEKSCADPATH}/src/Geom.cpp
     ${HEEKSCADPATH}/interface/HDialogs.cpp
     HeeksCNC.cpp

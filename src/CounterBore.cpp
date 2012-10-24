@@ -176,7 +176,7 @@ Python CCounterBore::GenerateGCodeForOneLocation( const CNCPoint & location, con
 			// Use the gradient of the cutting tool to determine how many circles need to
 			// be made before we have stepped down appropriately.
 
-			double circumference = 2.0 * PI * radius_of_spiral;
+			double circumference = 2.0 * M_PI * radius_of_spiral;
 			double gradient = fabs(pTool->m_params.m_gradient);
 
 			// If the gradient would have us cutting too deep in one circumference, reduce the

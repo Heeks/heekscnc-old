@@ -233,15 +233,15 @@ Python CZigZag::AppendTextToProgram(CMachineState *pMachineState)
 #ifdef STABLE_OPS_ONLY
             solids.push_back(object);
 #else
-			// Need to rotate a COPY of the solid by the fixture settings.
+/*			// Need to rotate a COPY of the solid by the fixture settings.
 			HeeksObj* copy = object->MakeACopy();
 			if (copy != NULL)
 			{
-				double m[16];	// A different form of the transformation matrix.
+			double m[16];	// A different form of the transformation matrix.
 				CFixture::extract( pMachineState->Fixture().GetMatrix(CFixture::YZ), m );
                 copy->ModifyByMatrix(m);
 
-                CFixture::extract( pMachineState->Fixture().GetMatrix(CFixture::XZ), m );
+               CFixture::extract( pMachineState->Fixture().GetMatrix(CFixture::XZ), m );
                 copy->ModifyByMatrix(m);
 
                 CFixture::extract( pMachineState->Fixture().GetMatrix(CFixture::XY), m );
@@ -249,7 +249,8 @@ Python CZigZag::AppendTextToProgram(CMachineState *pMachineState)
 
                 solids.push_back(copy);
             } // End if - then
- #endif
+*/ 
+#endif
        } // End if - then
 	} // End for
 
@@ -275,8 +276,8 @@ Python CZigZag::AppendTextToProgram(CMachineState *pMachineState)
 	gp_Pnt min( m_params.m_box.m_x[0], m_params.m_box.m_x[1], m_params.m_box.m_x[2] );
 	gp_Pnt max( m_params.m_box.m_x[3], m_params.m_box.m_x[4], m_params.m_box.m_x[5] );
 #else
-	gp_Pnt min = pMachineState->Fixture().Adjustment( gp_Pnt( m_params.m_box.m_x[0], m_params.m_box.m_x[1], m_params.m_box.m_x[2] ) );
-	gp_Pnt max = pMachineState->Fixture().Adjustment( gp_Pnt( m_params.m_box.m_x[3], m_params.m_box.m_x[4], m_params.m_box.m_x[5] ) );
+//	gp_Pnt min = pMachineState->Fixture().Adjustment( gp_Pnt( m_params.m_box.m_x[0], m_params.m_box.m_x[1], m_params.m_box.m_x[2] ) );
+//	gp_Pnt max = pMachineState->Fixture().Adjustment( gp_Pnt( m_params.m_box.m_x[3], m_params.m_box.m_x[4], m_params.m_box.m_x[5] ) );
 #endif
 
 	python << _T("ocl_funcs.zigzag(") << PythonString(filepath.GetFullPath()) << _T(", tool_diameter, corner_radius, float(") << m_params.m_step_over / theApp.m_program->m_units << _T("), float(") << min.X() / theApp.m_program->m_units << _T("), float(") << max.X() / theApp.m_program->m_units << _T("), float(") << min.Y() / theApp.m_program->m_units << _T("), float(") << max.Y() / theApp.m_program->m_units << _T("), ") << ((m_params.m_direction == 0) ? _T("'X'") : _T("'Y'")) << _T(", float(") << m_params.m_material_allowance / theApp.m_program->m_units << _T("), ") << m_params.m_style << _T(", clearance, rapid_safety_space, start_depth, step_down, final_depth, ") << theApp.m_program->m_units << _T(")\n");
