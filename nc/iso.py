@@ -36,6 +36,9 @@ class Creator(nc.Creator):
         self.x = 0
         self.y = 0
         self.z = 500
+        self.u = 0
+        self.v = 0
+        self.w = 0
         self.g0123_modal = False
         self.drill_modal = False
         self.prev_f = ''
@@ -130,6 +133,10 @@ class Creator(nc.Creator):
     def A(self): return('A')
     def B(self): return('B')
     def C(self): return('C')
+    def U(self): return('U')
+    def V(self): return('V')
+    def W(self): return('W')
+
     def CENTRE_X(self): return('I')
     def CENTRE_Y(self): return('J')
     def CENTRE_Z(self): return('K')
@@ -345,7 +352,7 @@ class Creator(nc.Creator):
     ############################################################################
     ##  Moves
 
-    def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None, machine_coordinates=None ):
+    def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None, u=None, v=None, w=None, machine_coordinates=None ):
         self.write_blocknum()
 
         if self.machine_coordinates != False or (machine_coordinates != None and machine_coordinates == True):
@@ -405,6 +412,31 @@ class Creator(nc.Creator):
             else:
                 self.write(self.SPACE() + self.C() + (self.fmt.string(dc)))
             self.c = c
+
+        if (u != None):
+            du = u - self.u
+            if (self.absolute_flag ):
+                self.write(self.SPACE() + self.U() + (self.fmt.string(u)))
+            else:
+                self.write(self.SPACE() + self.U() + (self.fmt.string(du)))
+            self.u = u
+
+        if (v != None):
+            dv = v - self.v
+            if (self.absolute_flag ):
+                self.write(self.SPACE() + self.V() + (self.fmt.string(v)))
+            else:
+                self.write(self.SPACE() + self.V() + (self.fmt.string(dv)))
+            self.v = v
+
+        if (w != None):
+            dw = w - self.w
+            if (self.absolute_flag ):
+                self.write(self.SPACE() + self.W() + (self.fmt.string(w)))
+            else:
+                self.write(self.SPACE() + self.W() + (self.fmt.string(dw)))
+            self.w = w
+
         self.write_spindle()
         self.write_misc()
         self.write('\n')

@@ -79,6 +79,9 @@ class Parser:
             self.x = None
             self.y = None
             self.z = None
+            self.u = None
+            self.v = None
+            self.w = None
             self.t = None
             self.m6 = False
 

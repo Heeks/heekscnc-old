@@ -20,3 +20,4 @@ emc2tap EMC Controller-tapping test 0
 tnc151 Heidenhain TNC151
 series1 Bridgeport Series I
 heiden Heidenhain test 0
+laser Laser 0

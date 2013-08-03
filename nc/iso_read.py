@@ -147,6 +147,18 @@ class Parser(nc.Parser):
             self.col = "axis"
             self.z = eval(word[1:])
             self.move = True
+        elif (word[0] == 'U' or word[0] == 'u'):
+            self.col = "axis"
+            self.u = eval(word[1:])
+            self.move = True
+        elif (word[0] == 'V' or word[0] == 'v'):
+            self.col = "axis"
+            self.v = eval(word[1:])
+            self.move = True
+        elif (word[0] == 'W' or word[0] == 'w'):
+            self.col = "axis"
+            self.w = eval(word[1:])
+            self.move = True
         elif (word[0] == '(') : (self.col, self.cdata) = ("comment", True)
         elif (word[0] == '!') : (self.col, self.cdata) = ("comment", True)
         elif (word[0] == ';') : (self.col, self.cdata) = ("comment", True)
