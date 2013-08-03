@@ -70,6 +70,7 @@ class Creator(nc.Creator):
 
     def BLOCK(self): return('N%i')
     def COMMENT(self,comment): return( ('(%s)' % comment ) )
+    def INSERT(self,txt): return( ('%s' % txt ) )
     def VARIABLE(self): return( '#%i')
     def VARIABLE_SET(self): return( '=%.3f')
 
@@ -921,6 +922,7 @@ class Creator(nc.Creator):
         self.write((self.COMMENT(text) + '\n'))
 
     def insert(self, text):
+        self.write((self.INSERT(text) + '\n'))
         pass
 
     def block_delete(self, on=False):        
