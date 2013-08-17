@@ -143,9 +143,9 @@ class Redirector(nc.Creator):
     ############################################################################
     ##  Moves
 
-    def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None, machine_coordinates=None):
+    def rapid(self, x=None, y=None, z=None, a=None, b=None, c=None, u=None, v=None, w=None, machine_coordinates=None):
         self.cut_path()
-        self.original.rapid(x, y, z, a, b, c, machine_coordinates)
+        self.original.rapid(x, y, z, a, b, c, u, v, w, machine_coordinates)
         if x != None: self.x = x * units
         if y != None: self.y = y * units
         if z != None: self.z = z * units
