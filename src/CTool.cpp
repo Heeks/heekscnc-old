@@ -1083,7 +1083,7 @@ void CToolParams::ReadParametersFromXMLElement(TiXmlElement* pElem)
 	}
 	if (pElem->Attribute("direction")) pElem->Attribute("direction", &m_direction);
 	if (pElem->Attribute("pitch")) pElem->Attribute("pitch", &m_pitch);
-	if (pElem->Attribute("drag_distance")) pElem->Attribute("pitch", &m_drag_knife_distance);
+	if (pElem->Attribute("drag_distance")) pElem->Attribute("drag_distance", &m_drag_knife_distance);
 }
 
 CTool::~CTool()

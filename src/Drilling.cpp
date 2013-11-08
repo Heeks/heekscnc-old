@@ -383,10 +383,10 @@ void CDrilling::glCommands(bool select, bool marked, bool no_color)
 
 		if (m_tool_number > 0)
 		{
-			HeeksObj* Tool = heeksCAD->GetIDObject( ToolType, m_tool_number );
+			CTool *Tool = (CTool *) CTool::Find( m_tool_number );
 			if (Tool != NULL)
 			{
-                		l_dHoleDiameter = ((CTool *) Tool)->m_params.m_diameter;
+				l_dHoleDiameter = Tool->m_params.m_diameter;
 			} // End if - then
 		} // End if - then
 

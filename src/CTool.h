@@ -55,6 +55,7 @@ public:
 		types_list.push_back( ToolTypeDescription_t( eToolLengthSwitch, wxString(_("Tool Length Switch")) ));
 		types_list.push_back( ToolTypeDescription_t( eEngravingTool, wxString(_("Engraving Tool")) ));
 		types_list.push_back( ToolTypeDescription_t( eDragKnife, wxString(_("Drag Knife")) ));
+		types_list.push_back( ToolTypeDescription_t( eTapTool, wxString(_("Tap Tool")) ));
 		return(types_list);
 	} // End GetToolTypesList() method
 

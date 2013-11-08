@@ -166,11 +166,11 @@ Python CTapping::AppendTextToProgram( CMachineState *pMachineState )
 
 	if (m_tool_number > 0)
 	  {
-	    HeeksObj* Tool = heeksCAD->GetIDObject( ToolType, m_tool_number );
+            CTool *Tool = (CTool *) CTool::Find( m_tool_number );
 	    if (Tool != NULL)
 	      {
-		pitch = ((CTool *) Tool)->m_params.m_pitch;
-		direction = ((CTool *) Tool)->m_params.m_direction;
+		pitch = Tool->m_params.m_pitch;
+		direction = Tool->m_params.m_direction;
 	      } // End if - then
 	  } // End if - then
 
@@ -320,10 +320,10 @@ void CTapping::glCommands(bool select, bool marked, bool no_color)
 
 		if (m_tool_number > 0)
 		{
-			HeeksObj* Tool = heeksCAD->GetIDObject( ToolType, m_tool_number );
+			CTool *Tool = (CTool *) CTool::Find( m_tool_number );
 			if (Tool != NULL)
 			{
-                		l_dHoleDiameter = ((CTool *) Tool)->m_params.m_diameter;
+				l_dHoleDiameter = Tool->m_params.m_diameter;
 			} // End if - then
 		} // End if - then
 

@@ -94,9 +94,9 @@ class SetAllActive: public Tool{
 			if(COperations::IsAnOperation(object->GetType()))
 			{
 				((COp*)object)->m_active = true;
-				heeksCAD->Changed();
 			}
 		}
+		heeksCAD->Changed();
 	}
 	wxString BitmapPath(){ return _T("setactive");}
 };
@@ -113,9 +113,9 @@ class SetAllInactive: public Tool{
 			if(COperations::IsAnOperation(object->GetType()))
 			{
 				((COp*)object)->m_active = false;
-				heeksCAD->Changed();
 			}
 		}
+		heeksCAD->Changed();
 	}
 	wxString BitmapPath(){ return _T("setinactive");}
 };
