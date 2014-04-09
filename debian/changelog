@@ -1,3 +1,9 @@
+heekscnc (0.18-2) unstable; urgency=low
+
+  * Fix dependencies (build and regular ones)
+
+ -- Romuald Conty <neomilium@gmail.com>  Wed, 09 Apr 2014 02:42:42 +0200
+
 heekscnc (0.18-1) unstable; urgency=low
 
   * Use only debhelper to build package (remove: cdbs)
