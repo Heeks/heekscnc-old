@@ -11,7 +11,7 @@ Vcs-Browser: https://github.com/Heeks/heekscnc
 Package: heekscnc
 Section: libs
 Architecture: any
-Depends: ${shlibs:Depends}, python-wxgtk2.8, libgtkglext1 (>= 1.2), python (>= 2.5), libboost-python1.40.0 | libboost-python1.46.1 | libboost-python1.42.0 | libboost-python1.49.0, python
+Depends: ${shlibs:Depends}, ${misc:Depends}, python-wxgtk2.8, libgtkglext1 (>= 1.2), python (>= 2.5), libboost-python1.40.0 | libboost-python1.46.1 | libboost-python1.42.0 | libboost-python1.49.0, python
 Description: HeeksCNC is an add-on for HeeksCAD http://code.google.com/p/heekscad/.
  The user can add machining operations. These can then be output to NC code.
  The NC code is then shown as red and green lines on the screen.
