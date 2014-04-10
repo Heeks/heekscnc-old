@@ -1,3 +1,16 @@
+heekscnc (0.18.20131108-2) unstable; urgency=low
+
+  * Add python-area as runtime dependency
+
+ -- Romuald Conty <neomilium@gmail.com>  Thu, 10 Apr 2014 16:42:42 +0200
+
+heekscnc (0.18.20131108-1) unstable; urgency=low
+
+  * Use 0.18.DATE format to ease development package build
+  Note: DATE is YYYYMMDD based on last commit on sources (excluding debian/)
+
+ -- Romuald Conty <neomilium@gmail.com>  Thu, 10 Apr 2014 12:42:42 +0200
+
 heekscnc (0.18-2) unstable; urgency=low
 
   * Fix dependencies (build and regular ones)
