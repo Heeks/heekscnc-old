@@ -22,15 +22,14 @@ else() #look for OpenCASCADE
   find_package ( OpenCASCADE REQUIRED COMPONENTS ${CASCADE_LIBS} )
 endif()
 
-set( HEEKSCADPATH ../../ )
-# find_path( HeeksCadDir interface/HeeksObj.h ${HEEKSCADPATH} ~/HeeksCAD ../.. c:/heekscad )
+find_package ( HeeksCAD REQUIRED )
 
 include(${wxWidgets_USE_FILE})
 
 include_directories (
     ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
     ${wxWidgets_INCLUDE_DIRS} ${OpenCASCADE_INCLUDE_DIR}
-    ${HEEKSCADPATH} ../kurve/geometry ../kurve/messages .
+    ${HeeksCAD_SRC_DIR} ../kurve/geometry ../kurve/messages .
     )
 set ( LIBRARY_OUTPUT_PATH ../bin )
 
@@ -44,7 +43,6 @@ endif( UNIX )
 
 set( heekscnc_HDRS
     AttachOp.h
-    ${HEEKSCADPATH}/interface/Box.h
     CNCPoint.h
     CTool.h
     CToolDlg.h
@@ -52,24 +50,15 @@ set( heekscnc_HDRS
     DepthOp.h
     Drilling.h
     Excellon.h
-    ${HEEKSCADPATH}/interface/HDialogs.h
-    ${HEEKSCADPATH}/interface/HeeksCADInterface.h
     HeeksCNC.h
     HeeksCNCInterface.h
     HeeksCNCTypes.h
-    ${HEEKSCADPATH}/interface/HeeksColor.h
-    ${HEEKSCADPATH}/interface/HeeksObj.h
     Interface.h
-    ${HEEKSCADPATH}/interface/LeftAndRight.h
     MachineState.h
-    ${HEEKSCADPATH}/interface/MarkedObject.h
     NCCode.h
-    ${HEEKSCADPATH}/interface/NiceTextCtrl.h
-    ${HEEKSCADPATH}/interface/ObjList.h
     Op.h
     Operations.h
     OutputCanvas.h
-    ${HEEKSCADPATH}/interface/PictureFrame.h
     Pocket.h
     PocketDlg.h
     Positioning.h
@@ -77,17 +66,6 @@ set( heekscnc_HDRS
     Profile.h
     Program.h
     ProgramCanvas.h
-    ${HEEKSCADPATH}/interface/Property.h
-    ${HEEKSCADPATH}/interface/PropertyCheck.h
-    ${HEEKSCADPATH}/interface/PropertyChoice.h
-    ${HEEKSCADPATH}/interface/PropertyColor.h
-    ${HEEKSCADPATH}/interface/PropertyDouble.h
-    ${HEEKSCADPATH}/interface/PropertyFile.h
-    ${HEEKSCADPATH}/interface/PropertyInt.h
-    ${HEEKSCADPATH}/interface/PropertyLength.h
-    ${HEEKSCADPATH}/interface/PropertyList.h
-    ${HEEKSCADPATH}/interface/PropertyString.h
-    ${HEEKSCADPATH}/interface/PropertyVertex.h
     PythonString.h
     PythonStuff.h
     RawMaterial.h
@@ -97,17 +75,38 @@ set( heekscnc_HDRS
     SpeedOp.h
     SpeedReference.h
     SpeedReferences.h
-    stdafx.h
-    ${HEEKSCADPATH}/interface/strconv.h
     Tag.h
     Tags.h
     Tapping.h
-    ${HEEKSCADPATH}/interface/Tool.h
-    ${HEEKSCADPATH}/interface/ToolImage.h
     Tools.h
-    ${HEEKSCADPATH}/interface/TransientObject.h
     TrsfNCCode.h
+    stdafx.h
    )
+set( heekscad_SRCS
+    ${HeeksCAD_SRC_DIR}/interface/HDialogs.cpp
+    ${HeeksCAD_SRC_DIR}/interface/HeeksColor.cpp
+    ${HeeksCAD_SRC_DIR}/interface/HeeksObj.cpp
+    ${HeeksCAD_SRC_DIR}/interface/LeftAndRight.cpp
+    ${HeeksCAD_SRC_DIR}/interface/MarkedObject.cpp
+    ${HeeksCAD_SRC_DIR}/interface/NiceTextCtrl.cpp
+    ${HeeksCAD_SRC_DIR}/interface/ObjList.cpp
+    ${HeeksCAD_SRC_DIR}/interface/ObjectCanvas.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PictureFrame.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyCheck.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyChoice.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyColor.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyDouble.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyFile.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyInt.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyLength.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyList.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyString.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyVertex.cpp
+    ${HeeksCAD_SRC_DIR}/interface/ToolImage.cpp
+    ${HeeksCAD_SRC_DIR}/interface/TransientObject.cpp
+    ${HeeksCAD_SRC_DIR}/interface/strconv.cpp
+    ${HeeksCAD_SRC_DIR}/src/Geom.cpp
+    )
 
 set( heekscnc_SRCS
     AttachOp.cpp
@@ -118,24 +117,14 @@ set( heekscnc_SRCS
     DepthOp.cpp
     Drilling.cpp
     Excellon.cpp
-    ${HEEKSCADPATH}/src/Geom.cpp
-    ${HEEKSCADPATH}/interface/HDialogs.cpp
     HeeksCNC.cpp
     HeeksCNCInterface.cpp
-    ${HEEKSCADPATH}/interface/HeeksColor.cpp
-    ${HEEKSCADPATH}/interface/HeeksObj.cpp
     Interface.cpp
-    ${HEEKSCADPATH}/interface/LeftAndRight.cpp
     MachineState.cpp
-    ${HEEKSCADPATH}/interface/MarkedObject.cpp
     NCCode.cpp
-    ${HEEKSCADPATH}/interface/NiceTextCtrl.cpp
-    ${HEEKSCADPATH}/interface/ObjectCanvas.cpp
-    ${HEEKSCADPATH}/interface/ObjList.cpp
     Op.cpp
     Operations.cpp
     OutputCanvas.cpp
-    ${HEEKSCADPATH}/interface/PictureFrame.cpp
     Pocket.cpp
     PocketDlg.cpp
     Positioning.cpp
@@ -143,16 +132,6 @@ set( heekscnc_SRCS
     Profile.cpp
     Program.cpp
     ProgramCanvas.cpp
-    ${HEEKSCADPATH}/interface/PropertyCheck.cpp
-    ${HEEKSCADPATH}/interface/PropertyChoice.cpp
-    ${HEEKSCADPATH}/interface/PropertyColor.cpp
-    ${HEEKSCADPATH}/interface/PropertyDouble.cpp
-    ${HEEKSCADPATH}/interface/PropertyFile.cpp
-    ${HEEKSCADPATH}/interface/PropertyInt.cpp
-    ${HEEKSCADPATH}/interface/PropertyLength.cpp
-    ${HEEKSCADPATH}/interface/PropertyList.cpp
-    ${HEEKSCADPATH}/interface/PropertyString.cpp
-    ${HEEKSCADPATH}/interface/PropertyVertex.cpp
     PythonString.cpp
     PythonStuff.cpp
     RawMaterial.cpp
@@ -162,17 +141,14 @@ set( heekscnc_SRCS
     SpeedOp.cpp
     SpeedReference.cpp
     SpeedReferences.cpp
-    stdafx.cpp
-    ${HEEKSCADPATH}/interface/strconv.cpp
     Tag.cpp
     Tags.cpp
     Tapping.cpp
-    ${HEEKSCADPATH}/interface/ToolImage.cpp
     Tools.cpp
-    ${HEEKSCADPATH}/interface/TransientObject.cpp
+    stdafx.cpp
    )
 
-add_library( heekscnc SHARED ${heekscnc_SRCS} ${platform_SRCS} ${heekscnc_HDRS} )
+add_library( heekscnc SHARED ${heekscnc_SRCS} ${heekscad_SRCS} ${platform_SRCS} ${heekscnc_HDRS} )
 target_link_libraries( heekscnc ${wxWidgets_LIBRARIES}  ${OpenCASCADE_LIBRARIES} )
 set_target_properties( heekscnc PROPERTIES SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} )
 set_target_properties( heekscnc PROPERTIES LINK_FLAGS -Wl,-Bsymbolic-functions )

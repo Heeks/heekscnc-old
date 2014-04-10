@@ -1,0 +1,7 @@
+files
+heekscnc.debhelper.log
+heekscnc.postinst.debhelper
+heekscnc.postrm.debhelper
+heekscnc.prerm.debhelper
+heekscnc.substvars
+heekscnc/
