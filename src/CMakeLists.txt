@@ -29,7 +29,7 @@ include(${wxWidgets_USE_FILE})
 include_directories (
     ${CMAKE_SOURCE_DIR} ${CMAKE_CURRENT_BINARY_DIR}
     ${wxWidgets_INCLUDE_DIRS} ${OpenCASCADE_INCLUDE_DIR}
-    ${HeeksCAD_INCLUDE_DIRS} ../kurve/geometry ../kurve/messages .
+    ${HeeksCAD_SRC_DIR} ../kurve/geometry ../kurve/messages .
     )
 set ( LIBRARY_OUTPUT_PATH ../bin )
 
@@ -42,31 +42,6 @@ else( UNIX )
 endif( UNIX )
 
 set( heekscnc_HDRS
-#    ${HEEKSCADPATH}/interface/Box.h
-#    ${HEEKSCADPATH}/interface/HDialogs.h
-#    ${HEEKSCADPATH}/interface/HeeksCADInterface.h
-#    ${HEEKSCADPATH}/interface/HeeksColor.h
-#    ${HEEKSCADPATH}/interface/HeeksObj.h
-#    ${HEEKSCADPATH}/interface/LeftAndRight.h
-#    ${HEEKSCADPATH}/interface/MarkedObject.h
-#    ${HEEKSCADPATH}/interface/NiceTextCtrl.h
-#    ${HEEKSCADPATH}/interface/ObjList.h
-#    ${HEEKSCADPATH}/interface/PictureFrame.h
-#    ${HEEKSCADPATH}/interface/Property.h
-#    ${HEEKSCADPATH}/interface/PropertyCheck.h
-#    ${HEEKSCADPATH}/interface/PropertyChoice.h
-#    ${HEEKSCADPATH}/interface/PropertyColor.h
-#    ${HEEKSCADPATH}/interface/PropertyDouble.h
-#    ${HEEKSCADPATH}/interface/PropertyFile.h
-#    ${HEEKSCADPATH}/interface/PropertyInt.h
-#    ${HEEKSCADPATH}/interface/PropertyLength.h
-#    ${HEEKSCADPATH}/interface/PropertyList.h
-#    ${HEEKSCADPATH}/interface/PropertyString.h
-#    ${HEEKSCADPATH}/interface/PropertyVertex.h
-#    ${HEEKSCADPATH}/interface/Tool.h
-#    ${HEEKSCADPATH}/interface/ToolImage.h
-#    ${HEEKSCADPATH}/interface/TransientObject.h
-#    ${HEEKSCADPATH}/interface/strconv.h
     AttachOp.h
     CNCPoint.h
     CTool.h
@@ -107,31 +82,33 @@ set( heekscnc_HDRS
     TrsfNCCode.h
     stdafx.h
    )
+set( heekscad_SRCS
+    ${HeeksCAD_SRC_DIR}/interface/HDialogs.cpp
+    ${HeeksCAD_SRC_DIR}/interface/HeeksColor.cpp
+    ${HeeksCAD_SRC_DIR}/interface/HeeksObj.cpp
+    ${HeeksCAD_SRC_DIR}/interface/LeftAndRight.cpp
+    ${HeeksCAD_SRC_DIR}/interface/MarkedObject.cpp
+    ${HeeksCAD_SRC_DIR}/interface/NiceTextCtrl.cpp
+    ${HeeksCAD_SRC_DIR}/interface/ObjList.cpp
+    ${HeeksCAD_SRC_DIR}/interface/ObjectCanvas.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PictureFrame.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyCheck.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyChoice.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyColor.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyDouble.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyFile.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyInt.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyLength.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyList.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyString.cpp
+    ${HeeksCAD_SRC_DIR}/interface/PropertyVertex.cpp
+    ${HeeksCAD_SRC_DIR}/interface/ToolImage.cpp
+    ${HeeksCAD_SRC_DIR}/interface/TransientObject.cpp
+    ${HeeksCAD_SRC_DIR}/interface/strconv.cpp
+    ${HeeksCAD_SRC_DIR}/src/Geom.cpp
+    )
 
 set( heekscnc_SRCS
-#    ${HEEKSCADPATH}/interface/HDialogs.cpp
-#    ${HEEKSCADPATH}/interface/HeeksColor.cpp
-#    ${HEEKSCADPATH}/interface/HeeksObj.cpp
-#    ${HEEKSCADPATH}/interface/LeftAndRight.cpp
-#    ${HEEKSCADPATH}/interface/MarkedObject.cpp
-#    ${HEEKSCADPATH}/interface/NiceTextCtrl.cpp
-#    ${HEEKSCADPATH}/interface/ObjList.cpp
-#    ${HEEKSCADPATH}/interface/ObjectCanvas.cpp
-#    ${HEEKSCADPATH}/interface/PictureFrame.cpp
-#    ${HEEKSCADPATH}/interface/PropertyCheck.cpp
-#    ${HEEKSCADPATH}/interface/PropertyChoice.cpp
-#    ${HEEKSCADPATH}/interface/PropertyColor.cpp
-#    ${HEEKSCADPATH}/interface/PropertyDouble.cpp
-#    ${HEEKSCADPATH}/interface/PropertyFile.cpp
-#    ${HEEKSCADPATH}/interface/PropertyInt.cpp
-#    ${HEEKSCADPATH}/interface/PropertyLength.cpp
-#    ${HEEKSCADPATH}/interface/PropertyList.cpp
-#    ${HEEKSCADPATH}/interface/PropertyString.cpp
-#    ${HEEKSCADPATH}/interface/PropertyVertex.cpp
-#    ${HEEKSCADPATH}/interface/ToolImage.cpp
-#    ${HEEKSCADPATH}/interface/TransientObject.cpp
-#    ${HEEKSCADPATH}/interface/strconv.cpp
-#    ${HEEKSCADPATH}/src/Geom.cpp
     AttachOp.cpp
     CNCPoint.cpp
     CTool.cpp
@@ -171,7 +148,7 @@ set( heekscnc_SRCS
     stdafx.cpp
    )
 
-add_library( heekscnc SHARED ${heekscnc_SRCS} ${platform_SRCS} ${heekscnc_HDRS} )
+add_library( heekscnc SHARED ${heekscnc_SRCS} ${heekscad_SRCS} ${platform_SRCS} ${heekscnc_HDRS} )
 target_link_libraries( heekscnc ${wxWidgets_LIBRARIES}  ${OpenCASCADE_LIBRARIES} )
 set_target_properties( heekscnc PROPERTIES SOVERSION ${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH} )
 set_target_properties( heekscnc PROPERTIES LINK_FLAGS -Wl,-Bsymbolic-functions )
